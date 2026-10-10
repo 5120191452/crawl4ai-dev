@@ -1,0 +1,839 @@
+{
+  "schema_version": 1,
+  "source_root": "http://orion.longsys.com/index.html",
+  "search_index": "http://orion.longsys.com/searchindex.js",
+  "generated_at": "2026-10-10T03:24:13.408473+00:00",
+  "expected_count": 103,
+  "success_count": 103,
+  "missing_count": 0,
+  "failure_count": 0,
+  "complete": true,
+  "pages": [
+    {
+      "docname": "Developer List",
+      "title": "Developer List",
+      "url": "http://orion.longsys.com/Developer%20List.html",
+      "file": "Developer List.md",
+      "depth": 1,
+      "markdown_chars": 1007
+    },
+    {
+      "docname": "Download",
+      "title": "Download",
+      "url": "http://orion.longsys.com/Download.html",
+      "file": "Download.md",
+      "depth": 1,
+      "markdown_chars": 2914
+    },
+    {
+      "docname": "Examples",
+      "title": "Examples",
+      "url": "http://orion.longsys.com/Examples.html",
+      "file": "Examples.md",
+      "depth": 1,
+      "markdown_chars": 3220
+    },
+    {
+      "docname": "Installation and Configuration",
+      "title": "Installation and Configuration",
+      "url": "http://orion.longsys.com/Installation%20and%20Configuration.html",
+      "file": "Installation and Configuration.md",
+      "depth": 1,
+      "markdown_chars": 1463
+    },
+    {
+      "docname": "Overview",
+      "title": "Overview",
+      "url": "http://orion.longsys.com/Overview.html",
+      "file": "Overview.md",
+      "depth": 1,
+      "markdown_chars": 3712
+    },
+    {
+      "docname": "Problems and Solutions",
+      "title": "Problems and Solutions",
+      "url": "http://orion.longsys.com/Problems%20and%20Solutions.html",
+      "file": "Problems and Solutions.md",
+      "depth": 1,
+      "markdown_chars": 7192
+    },
+    {
+      "docname": "Release Note",
+      "title": "Release Note",
+      "url": "http://orion.longsys.com/Release%20Note.html",
+      "file": "Release Note.md",
+      "depth": 1,
+      "markdown_chars": 19552
+    },
+    {
+      "docname": "ark",
+      "title": "ark package",
+      "url": "http://orion.longsys.com/ark.html",
+      "file": "ark.md",
+      "depth": 1,
+      "markdown_chars": 22599
+    },
+    {
+      "docname": "ark.ark_adaptation_tool",
+      "title": "ark.ark_adaptation_tool package",
+      "url": "http://orion.longsys.com/ark.ark_adaptation_tool.html",
+      "file": "ark.ark_adaptation_tool.md",
+      "depth": 1,
+      "markdown_chars": 2290
+    },
+    {
+      "docname": "ark.ark_adaptation_tool.adaptation_tool",
+      "title": "ark.ark_adaptation_tool.adaptation_tool package",
+      "url": "http://orion.longsys.com/ark.ark_adaptation_tool.adaptation_tool.html",
+      "file": "ark.ark_adaptation_tool.adaptation_tool.md",
+      "depth": 1,
+      "markdown_chars": 1042
+    },
+    {
+      "docname": "ark.ark_adb",
+      "title": "ark.ark_adb package",
+      "url": "http://orion.longsys.com/ark.ark_adb.html",
+      "file": "ark.ark_adb.md",
+      "depth": 1,
+      "markdown_chars": 929
+    },
+    {
+      "docname": "ark.ark_ape",
+      "title": "ark.ark_ape package",
+      "url": "http://orion.longsys.com/ark.ark_ape.html",
+      "file": "ark.ark_ape.md",
+      "depth": 1,
+      "markdown_chars": 302
+    },
+    {
+      "docname": "ark.ark_appium",
+      "title": "ark.ark_appium package",
+      "url": "http://orion.longsys.com/ark.ark_appium.html",
+      "file": "ark.ark_appium.md",
+      "depth": 1,
+      "markdown_chars": 6016
+    },
+    {
+      "docname": "ark.ark_appium.appium",
+      "title": "ark.ark_appium.appium package",
+      "url": "http://orion.longsys.com/ark.ark_appium.appium.html",
+      "file": "ark.ark_appium.appium.md",
+      "depth": 1,
+      "markdown_chars": 9915
+    },
+    {
+      "docname": "ark.ark_authorizations",
+      "title": "ark.ark_authorizations package",
+      "url": "http://orion.longsys.com/ark.ark_authorizations.html",
+      "file": "ark.ark_authorizations.md",
+      "depth": 1,
+      "markdown_chars": 2502
+    },
+    {
+      "docname": "ark.ark_authorizations.authorizations",
+      "title": "ark.ark_authorizations.authorizations package",
+      "url": "http://orion.longsys.com/ark.ark_authorizations.authorizations.html",
+      "file": "ark.ark_authorizations.authorizations.md",
+      "depth": 1,
+      "markdown_chars": 1887
+    },
+    {
+      "docname": "ark.ark_buffer",
+      "title": "ark.ark_buffer package",
+      "url": "http://orion.longsys.com/ark.ark_buffer.html",
+      "file": "ark.ark_buffer.md",
+      "depth": 1,
+      "markdown_chars": 5427
+    },
+    {
+      "docname": "ark.ark_buffer.buffer",
+      "title": "ark.ark_buffer.buffer package",
+      "url": "http://orion.longsys.com/ark.ark_buffer.buffer.html",
+      "file": "ark.ark_buffer.buffer.md",
+      "depth": 1,
+      "markdown_chars": 8322
+    },
+    {
+      "docname": "ark.ark_camera",
+      "title": "ark.ark_camera package",
+      "url": "http://orion.longsys.com/ark.ark_camera.html",
+      "file": "ark.ark_camera.md",
+      "depth": 1,
+      "markdown_chars": 39676
+    },
+    {
+      "docname": "ark.ark_camera.camera",
+      "title": "ark.ark_camera.camera package",
+      "url": "http://orion.longsys.com/ark.ark_camera.camera.html",
+      "file": "ark.ark_camera.camera.md",
+      "depth": 1,
+      "markdown_chars": 17623
+    },
+    {
+      "docname": "ark.ark_common",
+      "title": "ark.ark_common package",
+      "url": "http://orion.longsys.com/ark.ark_common.html",
+      "file": "ark.ark_common.md",
+      "depth": 1,
+      "markdown_chars": 14688
+    },
+    {
+      "docname": "ark.ark_common.auxiliary_function",
+      "title": "ark.ark_common.auxiliary_function package",
+      "url": "http://orion.longsys.com/ark.ark_common.auxiliary_function.html",
+      "file": "ark.ark_common.auxiliary_function.md",
+      "depth": 1,
+      "markdown_chars": 1903
+    },
+    {
+      "docname": "ark.ark_common.common_data",
+      "title": "ark.ark_common.common_data package",
+      "url": "http://orion.longsys.com/ark.ark_common.common_data.html",
+      "file": "ark.ark_common.common_data.md",
+      "depth": 1,
+      "markdown_chars": 1994
+    },
+    {
+      "docname": "ark.ark_common.decorator",
+      "title": "ark.ark_common.decorator package",
+      "url": "http://orion.longsys.com/ark.ark_common.decorator.html",
+      "file": "ark.ark_common.decorator.md",
+      "depth": 1,
+      "markdown_chars": 3723
+    },
+    {
+      "docname": "ark.ark_common.serial_comm",
+      "title": "ark.ark_common.serial_comm package",
+      "url": "http://orion.longsys.com/ark.ark_common.serial_comm.html",
+      "file": "ark.ark_common.serial_comm.md",
+      "depth": 1,
+      "markdown_chars": 1492
+    },
+    {
+      "docname": "ark.ark_common.singleton",
+      "title": "ark.ark_common.singleton package",
+      "url": "http://orion.longsys.com/ark.ark_common.singleton.html",
+      "file": "ark.ark_common.singleton.md",
+      "depth": 1,
+      "markdown_chars": 582
+    },
+    {
+      "docname": "ark.ark_config",
+      "title": "ark.ark_config package",
+      "url": "http://orion.longsys.com/ark.ark_config.html",
+      "file": "ark.ark_config.md",
+      "depth": 1,
+      "markdown_chars": 4238
+    },
+    {
+      "docname": "ark.ark_config.config",
+      "title": "ark.ark_config.config package",
+      "url": "http://orion.longsys.com/ark.ark_config.config.html",
+      "file": "ark.ark_config.config.md",
+      "depth": 1,
+      "markdown_chars": 6462
+    },
+    {
+      "docname": "ark.ark_config.config.ark_config",
+      "title": "ark.ark_config.config.ark_config package",
+      "url": "http://orion.longsys.com/ark.ark_config.config.ark_config.html",
+      "file": "ark.ark_config.config.ark_config.md",
+      "depth": 1,
+      "markdown_chars": 4296
+    },
+    {
+      "docname": "ark.ark_device",
+      "title": "ark.ark_device package",
+      "url": "http://orion.longsys.com/ark.ark_device.html",
+      "file": "ark.ark_device.md",
+      "depth": 1,
+      "markdown_chars": 15445
+    },
+    {
+      "docname": "ark.ark_device.device",
+      "title": "ark.ark_device.device package",
+      "url": "http://orion.longsys.com/ark.ark_device.device.html",
+      "file": "ark.ark_device.device.md",
+      "depth": 1,
+      "markdown_chars": 24415
+    },
+    {
+      "docname": "ark.ark_dvr",
+      "title": "ark.ark_dvr package",
+      "url": "http://orion.longsys.com/ark.ark_dvr.html",
+      "file": "ark.ark_dvr.md",
+      "depth": 1,
+      "markdown_chars": 1980
+    },
+    {
+      "docname": "ark.ark_dvr.dvr",
+      "title": "ark.ark_dvr.dvr package",
+      "url": "http://orion.longsys.com/ark.ark_dvr.dvr.html",
+      "file": "ark.ark_dvr.dvr.md",
+      "depth": 1,
+      "markdown_chars": 4255
+    },
+    {
+      "docname": "ark.ark_file_operation",
+      "title": "ark.ark_file_operation package",
+      "url": "http://orion.longsys.com/ark.ark_file_operation.html",
+      "file": "ark.ark_file_operation.md",
+      "depth": 1,
+      "markdown_chars": 9002
+    },
+    {
+      "docname": "ark.ark_file_operation.file_operation",
+      "title": "ark.ark_file_operation.file_operation package",
+      "url": "http://orion.longsys.com/ark.ark_file_operation.file_operation.html",
+      "file": "ark.ark_file_operation.file_operation.md",
+      "depth": 1,
+      "markdown_chars": 8654
+    },
+    {
+      "docname": "ark.ark_ipc",
+      "title": "ark.ark_ipc package",
+      "url": "http://orion.longsys.com/ark.ark_ipc.html",
+      "file": "ark.ark_ipc.md",
+      "depth": 1,
+      "markdown_chars": 4791
+    },
+    {
+      "docname": "ark.ark_ipc.ipc",
+      "title": "ark.ark_ipc.ipc package",
+      "url": "http://orion.longsys.com/ark.ark_ipc.ipc.html",
+      "file": "ark.ark_ipc.ipc.md",
+      "depth": 1,
+      "markdown_chars": 4700
+    },
+    {
+      "docname": "ark.ark_ipc.ipc.ark_ipc",
+      "title": "ark.ark_ipc.ipc.ark_ipc package",
+      "url": "http://orion.longsys.com/ark.ark_ipc.ipc.ark_ipc.html",
+      "file": "ark.ark_ipc.ipc.ark_ipc.md",
+      "depth": 1,
+      "markdown_chars": 52
+    },
+    {
+      "docname": "ark.ark_logging",
+      "title": "ark.ark_logging package",
+      "url": "http://orion.longsys.com/ark.ark_logging.html",
+      "file": "ark.ark_logging.md",
+      "depth": 1,
+      "markdown_chars": 6313
+    },
+    {
+      "docname": "ark.ark_logging.logging",
+      "title": "ark.ark_logging.logging package",
+      "url": "http://orion.longsys.com/ark.ark_logging.logging.html",
+      "file": "ark.ark_logging.logging.md",
+      "depth": 1,
+      "markdown_chars": 12289
+    },
+    {
+      "docname": "ark.ark_logging.logging.ark_logging",
+      "title": "ark.ark_logging.logging.ark_logging package",
+      "url": "http://orion.longsys.com/ark.ark_logging.logging.ark_logging.html",
+      "file": "ark.ark_logging.logging.ark_logging.md",
+      "depth": 1,
+      "markdown_chars": 4541
+    },
+    {
+      "docname": "ark.ark_mobile",
+      "title": "ark.ark_mobile package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.html",
+      "file": "ark.ark_mobile.md",
+      "depth": 1,
+      "markdown_chars": 28971
+    },
+    {
+      "docname": "ark.ark_mobile.mobile",
+      "title": "ark.ark_mobile.mobile package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.html",
+      "file": "ark.ark_mobile.mobile.md",
+      "depth": 1,
+      "markdown_chars": 105183
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb",
+      "title": "ark.ark_mobile.mobile.android_adb package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.html",
+      "file": "ark.ark_mobile.mobile.android_adb.md",
+      "depth": 1,
+      "markdown_chars": 77991
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.md",
+      "depth": 1,
+      "markdown_chars": 69436
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.google",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.google package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.google.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.google.md",
+      "depth": 1,
+      "markdown_chars": 9670
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.google.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.google.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.google.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.google.models.md",
+      "depth": 1,
+      "markdown_chars": 2122
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.honor",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.honor package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.honor.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.honor.md",
+      "depth": 1,
+      "markdown_chars": 14619
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.honor.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.honor.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.honor.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.honor.models.md",
+      "depth": 1,
+      "markdown_chars": 4843
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.huawei",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.huawei package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.huawei.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.huawei.md",
+      "depth": 1,
+      "markdown_chars": 7283
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.huawei.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.huawei.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.huawei.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.huawei.models.md",
+      "depth": 1,
+      "markdown_chars": 1122
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.lenovo",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.lenovo package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.lenovo.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.lenovo.md",
+      "depth": 1,
+      "markdown_chars": 6510
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.lenovo.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.lenovo.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.lenovo.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.lenovo.models.md",
+      "depth": 1,
+      "markdown_chars": 1329
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.oplus",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.oplus package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.oplus.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.oplus.md",
+      "depth": 1,
+      "markdown_chars": 20192
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.oplus.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.oplus.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.oplus.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.oplus.models.md",
+      "depth": 1,
+      "markdown_chars": 9215
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.samsung",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.samsung package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.samsung.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.samsung.md",
+      "depth": 1,
+      "markdown_chars": 19993
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.samsung.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.samsung.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.samsung.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.samsung.models.md",
+      "depth": 1,
+      "markdown_chars": 8184
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.tecno",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.tecno package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.tecno.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.tecno.md",
+      "depth": 1,
+      "markdown_chars": 6145
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.tecno.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.tecno.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.tecno.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.tecno.models.md",
+      "depth": 1,
+      "markdown_chars": 1224
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.vivo",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.vivo package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.vivo.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.vivo.md",
+      "depth": 1,
+      "markdown_chars": 11275
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.vivo.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.vivo.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.vivo.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.vivo.models.md",
+      "depth": 1,
+      "markdown_chars": 4009
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.xiaomi.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi.md",
+      "depth": 1,
+      "markdown_chars": 10342
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi.models",
+      "title": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi.models package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.adapters.xiaomi.models.html",
+      "file": "ark.ark_mobile.mobile.android_adb.adapters.xiaomi.models.md",
+      "depth": 1,
+      "markdown_chars": 4221
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.android_adb.services",
+      "title": "ark.ark_mobile.mobile.android_adb.services package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.android_adb.services.html",
+      "file": "ark.ark_mobile.mobile.android_adb.services.md",
+      "depth": 1,
+      "markdown_chars": 12819
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.common",
+      "title": "ark.ark_mobile.mobile.common package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.common.html",
+      "file": "ark.ark_mobile.mobile.common.md",
+      "depth": 1,
+      "markdown_chars": 1734
+    },
+    {
+      "docname": "ark.ark_mobile.mobile.contracts",
+      "title": "ark.ark_mobile.mobile.contracts package",
+      "url": "http://orion.longsys.com/ark.ark_mobile.mobile.contracts.html",
+      "file": "ark.ark_mobile.mobile.contracts.md",
+      "depth": 1,
+      "markdown_chars": 12031
+    },
+    {
+      "docname": "ark.ark_notify",
+      "title": "ark.ark_notify package",
+      "url": "http://orion.longsys.com/ark.ark_notify.html",
+      "file": "ark.ark_notify.md",
+      "depth": 1,
+      "markdown_chars": 960
+    },
+    {
+      "docname": "ark.ark_oven",
+      "title": "ark.ark_oven package",
+      "url": "http://orion.longsys.com/ark.ark_oven.html",
+      "file": "ark.ark_oven.md",
+      "depth": 1,
+      "markdown_chars": 6505
+    },
+    {
+      "docname": "ark.ark_oven.oven",
+      "title": "ark.ark_oven.oven package",
+      "url": "http://orion.longsys.com/ark.ark_oven.oven.html",
+      "file": "ark.ark_oven.oven.md",
+      "depth": 1,
+      "markdown_chars": 8012
+    },
+    {
+      "docname": "ark.ark_platform_adapt",
+      "title": "ark.ark_platform_adapt package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.html",
+      "file": "ark.ark_platform_adapt.md",
+      "depth": 1,
+      "markdown_chars": 12932
+    },
+    {
+      "docname": "ark.ark_platform_adapt.platform_adapt",
+      "title": "ark.ark_platform_adapt.platform_adapt package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.platform_adapt.html",
+      "file": "ark.ark_platform_adapt.platform_adapt.md",
+      "depth": 1,
+      "markdown_chars": 22410
+    },
+    {
+      "docname": "ark.ark_platform_adapt.platform_adapt.platform_operation",
+      "title": "ark.ark_platform_adapt.platform_adapt.platform_operation package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.platform_adapt.platform_operation.html",
+      "file": "ark.ark_platform_adapt.platform_adapt.platform_operation.md",
+      "depth": 1,
+      "markdown_chars": 11029
+    },
+    {
+      "docname": "ark.ark_platform_adapt.third_party",
+      "title": "ark.ark_platform_adapt.third_party package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.third_party.html",
+      "file": "ark.ark_platform_adapt.third_party.md",
+      "depth": 1,
+      "markdown_chars": 18800
+    },
+    {
+      "docname": "ark.ark_platform_adapt.third_party.longsys_ci_system",
+      "title": "ark.ark_platform_adapt.third_party.longsys_ci_system package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.third_party.longsys_ci_system.html",
+      "file": "ark.ark_platform_adapt.third_party.longsys_ci_system.md",
+      "depth": 1,
+      "markdown_chars": 3629
+    },
+    {
+      "docname": "ark.ark_platform_adapt.third_party.longsys_distributed_system",
+      "title": "ark.ark_platform_adapt.third_party.longsys_distributed_system package",
+      "url": "http://orion.longsys.com/ark.ark_platform_adapt.third_party.longsys_distributed_system.html",
+      "file": "ark.ark_platform_adapt.third_party.longsys_distributed_system.md",
+      "depth": 1,
+      "markdown_chars": 2052
+    },
+    {
+      "docname": "ark.ark_power",
+      "title": "ark.ark_power package",
+      "url": "http://orion.longsys.com/ark.ark_power.html",
+      "file": "ark.ark_power.md",
+      "depth": 1,
+      "markdown_chars": 14428
+    },
+    {
+      "docname": "ark.ark_power.power",
+      "title": "ark.ark_power.power package",
+      "url": "http://orion.longsys.com/ark.ark_power.power.html",
+      "file": "ark.ark_power.power.md",
+      "depth": 1,
+      "markdown_chars": 23111
+    },
+    {
+      "docname": "ark.ark_recorder",
+      "title": "ark.ark_recorder package",
+      "url": "http://orion.longsys.com/ark.ark_recorder.html",
+      "file": "ark.ark_recorder.md",
+      "depth": 1,
+      "markdown_chars": 7594
+    },
+    {
+      "docname": "ark.ark_recorder.recorder",
+      "title": "ark.ark_recorder.recorder package",
+      "url": "http://orion.longsys.com/ark.ark_recorder.recorder.html",
+      "file": "ark.ark_recorder.recorder.md",
+      "depth": 1,
+      "markdown_chars": 5876
+    },
+    {
+      "docname": "ark.ark_sector_operation",
+      "title": "ark.ark_sector_operation package",
+      "url": "http://orion.longsys.com/ark.ark_sector_operation.html",
+      "file": "ark.ark_sector_operation.md",
+      "depth": 1,
+      "markdown_chars": 6337
+    },
+    {
+      "docname": "ark.ark_sector_operation.sector_operation",
+      "title": "ark.ark_sector_operation.sector_operation package",
+      "url": "http://orion.longsys.com/ark.ark_sector_operation.sector_operation.html",
+      "file": "ark.ark_sector_operation.sector_operation.md",
+      "depth": 1,
+      "markdown_chars": 9290
+    },
+    {
+      "docname": "ark.ark_sector_operation.sector_operation.base",
+      "title": "ark.ark_sector_operation.sector_operation.base package",
+      "url": "http://orion.longsys.com/ark.ark_sector_operation.sector_operation.base.html",
+      "file": "ark.ark_sector_operation.sector_operation.base.md",
+      "depth": 1,
+      "markdown_chars": 5558
+    },
+    {
+      "docname": "ark.ark_sector_operation.sector_operation.factory",
+      "title": "ark.ark_sector_operation.sector_operation.factory package",
+      "url": "http://orion.longsys.com/ark.ark_sector_operation.sector_operation.factory.html",
+      "file": "ark.ark_sector_operation.sector_operation.factory.md",
+      "depth": 1,
+      "markdown_chars": 172
+    },
+    {
+      "docname": "ark.ark_ssd",
+      "title": "ark.ark_ssd package",
+      "url": "http://orion.longsys.com/ark.ark_ssd.html",
+      "file": "ark.ark_ssd.md",
+      "depth": 1,
+      "markdown_chars": 5505
+    },
+    {
+      "docname": "ark.ark_ssd.ssd",
+      "title": "ark.ark_ssd.ssd package",
+      "url": "http://orion.longsys.com/ark.ark_ssd.ssd.html",
+      "file": "ark.ark_ssd.ssd.md",
+      "depth": 1,
+      "markdown_chars": 24634
+    },
+    {
+      "docname": "ark.ark_std_cmd",
+      "title": "ark.ark_std_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_std_cmd.html",
+      "file": "ark.ark_std_cmd.md",
+      "depth": 1,
+      "markdown_chars": 61214
+    },
+    {
+      "docname": "ark.ark_std_cmd.std_cmd",
+      "title": "ark.ark_std_cmd.std_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_std_cmd.std_cmd.html",
+      "file": "ark.ark_std_cmd.std_cmd.md",
+      "depth": 1,
+      "markdown_chars": 249663
+    },
+    {
+      "docname": "ark.ark_std_cmd.std_cmd.emmc_std_cmd",
+      "title": "ark.ark_std_cmd.std_cmd.emmc_std_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_std_cmd.std_cmd.emmc_std_cmd.html",
+      "file": "ark.ark_std_cmd.std_cmd.emmc_std_cmd.md",
+      "depth": 1,
+      "markdown_chars": 38264
+    },
+    {
+      "docname": "ark.ark_std_cmd.std_cmd.sd_std_cmd",
+      "title": "ark.ark_std_cmd.std_cmd.sd_std_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_std_cmd.std_cmd.sd_std_cmd.html",
+      "file": "ark.ark_std_cmd.std_cmd.sd_std_cmd.md",
+      "depth": 1,
+      "markdown_chars": 5271
+    },
+    {
+      "docname": "ark.ark_std_cmd.std_cmd.usb_std_cmd",
+      "title": "ark.ark_std_cmd.std_cmd.usb_std_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_std_cmd.std_cmd.usb_std_cmd.html",
+      "file": "ark.ark_std_cmd.std_cmd.usb_std_cmd.md",
+      "depth": 1,
+      "markdown_chars": 19083
+    },
+    {
+      "docname": "ark.ark_switch_system",
+      "title": "ark.ark_switch_system package",
+      "url": "http://orion.longsys.com/ark.ark_switch_system.html",
+      "file": "ark.ark_switch_system.md",
+      "depth": 1,
+      "markdown_chars": 2475
+    },
+    {
+      "docname": "ark.ark_switch_system.switch_system",
+      "title": "ark.ark_switch_system.switch_system package",
+      "url": "http://orion.longsys.com/ark.ark_switch_system.switch_system.html",
+      "file": "ark.ark_switch_system.switch_system.md",
+      "depth": 1,
+      "markdown_chars": 1135
+    },
+    {
+      "docname": "ark.ark_task_mgr",
+      "title": "ark.ark_task_mgr package",
+      "url": "http://orion.longsys.com/ark.ark_task_mgr.html",
+      "file": "ark.ark_task_mgr.md",
+      "depth": 1,
+      "markdown_chars": 3800
+    },
+    {
+      "docname": "ark.ark_task_mgr.task_mgr",
+      "title": "ark.ark_task_mgr.task_mgr package",
+      "url": "http://orion.longsys.com/ark.ark_task_mgr.task_mgr.html",
+      "file": "ark.ark_task_mgr.task_mgr.md",
+      "depth": 1,
+      "markdown_chars": 4658
+    },
+    {
+      "docname": "ark.ark_upgradation",
+      "title": "ark.ark_upgradation package",
+      "url": "http://orion.longsys.com/ark.ark_upgradation.html",
+      "file": "ark.ark_upgradation.md",
+      "depth": 1,
+      "markdown_chars": 2931
+    },
+    {
+      "docname": "ark.ark_upgradation.upgradation",
+      "title": "ark.ark_upgradation.upgradation package",
+      "url": "http://orion.longsys.com/ark.ark_upgradation.upgradation.html",
+      "file": "ark.ark_upgradation.upgradation.md",
+      "depth": 1,
+      "markdown_chars": 3330
+    },
+    {
+      "docname": "ark.ark_upgradation.upgradation.base",
+      "title": "ark.ark_upgradation.upgradation.base package",
+      "url": "http://orion.longsys.com/ark.ark_upgradation.upgradation.base.html",
+      "file": "ark.ark_upgradation.upgradation.base.md",
+      "depth": 1,
+      "markdown_chars": 1436
+    },
+    {
+      "docname": "ark.ark_visualsims",
+      "title": "ark.ark_visualsims package",
+      "url": "http://orion.longsys.com/ark.ark_visualsims.html",
+      "file": "ark.ark_visualsims.md",
+      "depth": 1,
+      "markdown_chars": 20722
+    },
+    {
+      "docname": "ark.ark_visualsims.visualsims",
+      "title": "ark.ark_visualsims.visualsims package",
+      "url": "http://orion.longsys.com/ark.ark_visualsims.visualsims.html",
+      "file": "ark.ark_visualsims.visualsims.md",
+      "depth": 1,
+      "markdown_chars": 24655
+    },
+    {
+      "docname": "ark.ark_vu_cmd",
+      "title": "ark.ark_vu_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_vu_cmd.html",
+      "file": "ark.ark_vu_cmd.md",
+      "depth": 1,
+      "markdown_chars": 3867
+    },
+    {
+      "docname": "ark.ark_vu_cmd.vu_cmd",
+      "title": "ark.ark_vu_cmd.vu_cmd package",
+      "url": "http://orion.longsys.com/ark.ark_vu_cmd.vu_cmd.html",
+      "file": "ark.ark_vu_cmd.vu_cmd.md",
+      "depth": 1,
+      "markdown_chars": 14374
+    },
+    {
+      "docname": "index",
+      "title": "Welcome to ark",
+      "url": "http://orion.longsys.com/index.html",
+      "file": "index.md",
+      "depth": 0,
+      "markdown_chars": 6877
+    },
+    {
+      "docname": "modules",
+      "title": "Framework API",
+      "url": "http://orion.longsys.com/modules.html",
+      "file": "modules.md",
+      "depth": 1,
+      "markdown_chars": 5128
+    }
+  ],
+  "missing": [],
+  "failures": []
+}

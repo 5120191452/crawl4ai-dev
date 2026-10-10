@@ -1,0 +1,122 @@
+[
+  {
+    "id": "device_io",
+    "title": "设备初始化与读写",
+    "description": "打开和初始化存储设备，并完成读取、写入、擦除或队列操作。",
+    "keywords": ["设备", "读写", "读取", "写入", "擦除", "随机读写", "device", "read", "write", "erase", "cmdq"],
+    "components": ["ark_device", "ark_buffer"],
+    "preferred_names": ["create_object", "open", "device_init", "fill_data", "read", "write", "compare", "erase", "cmdq_send", "cmdq_get_response", "close"],
+    "prerequisites": ["明确设备类型、访问模式和传输协议", "准备与数据长度匹配的 ark_buffer", "确认操作地址和长度不会破坏非目标数据"],
+    "workflow": ["创建组件", "打开设备", "初始化设备", "执行读写或擦除", "校验结果", "关闭设备"]
+  },
+  {
+    "id": "buffer_processing",
+    "title": "Buffer 创建与数据处理",
+    "description": "创建 Ark Buffer，填充、复制、比较或读取其中的数据。",
+    "keywords": ["buffer", "缓存", "缓冲区", "填充", "比较数据", "数据比较", "fill", "compare", "copy"],
+    "components": ["ark_buffer"],
+    "preferred_names": ["create_object", "fill_data", "copy", "compare", "get_data", "get_size"],
+    "prerequisites": ["明确 Buffer 大小和 Buffer 类型", "确认 offset 与 size 未越界"],
+    "workflow": ["创建 Buffer", "填充或写入数据", "读取、复制或比较", "记录校验结果"]
+  },
+  {
+    "id": "file_operations",
+    "title": "主机或设备文件操作",
+    "description": "创建、打开、读写、复制、比较、重命名或删除文件和目录。",
+    "keywords": ["文件", "目录", "复制文件", "读文件", "写文件", "file", "directory", "copy", "rename", "delete"],
+    "components": ["ark_file_operation", "ark_mobile"],
+    "preferred_names": ["create_object", "file_open", "file_read", "file_write", "file_close", "copy_file", "compare_file", "delete_file", "dir_create"],
+    "prerequisites": ["确认操作发生在主机端还是移动设备端", "确认路径存在且具备权限"],
+    "workflow": ["创建文件操作组件", "打开或定位文件", "执行文件操作", "校验结果", "关闭文件"]
+  },
+  {
+    "id": "power_control",
+    "title": "电源和继电器控制",
+    "description": "连接电源设备，控制电压、电流、继电器或执行上下电测试。",
+    "keywords": ["电源", "上下电", "掉电", "电压", "电流", "继电器", "power", "voltage", "current", "relay"],
+    "components": ["ark_power"],
+    "preferred_names": ["create_object", "power_connect", "set_voltage", "set_current", "power_on", "power_off", "power_disconnect"],
+    "prerequisites": ["确认电源或掉电板类型", "确认串口、设备盘符和安全电压范围"],
+    "workflow": ["创建电源组件", "连接设备", "设置电源参数", "执行上下电或测量", "断开连接"]
+  },
+  {
+    "id": "mobile_automation",
+    "title": "Android 移动设备自动化",
+    "description": "通过 ADB 完成设备连接、存储、文件、媒体、应用和相机自动化。",
+    "keywords": ["安卓", "手机", "移动设备", "adb", "android", "相册", "媒体", "应用", "弹窗", "mobile"],
+    "components": ["ark_mobile", "ark_adb"],
+    "preferred_names": ["create_object", "connect", "get_test_storage_info", "copy_path", "take_photo", "record_video", "get_gallery_counts", "disconnect"],
+    "prerequisites": ["确认 Android 设备已授权 ADB", "提供 device serial 或其他设备选择信息", "确认目标品牌和系统版本"],
+    "workflow": ["创建移动设备组件", "连接并确认设备状态", "执行文件、应用或相机操作", "读取结构化结果", "清理连接"]
+  },
+  {
+    "id": "camera_capture",
+    "title": "相机拍照、录像与画质检查",
+    "description": "控制相机拍照或录像，并进行图片、视频或画质验证。",
+    "keywords": ["相机", "拍照", "录像", "视频", "画质", "丢帧", "模糊", "camera", "photo", "video", "capture"],
+    "components": ["ark_camera", "ark_mobile", "ark_visualsims", "ark_recorder"],
+    "preferred_names": ["create_object", "connect", "take_photo", "record_video", "start_record", "stop_record", "check_video", "close"],
+    "prerequisites": ["确认相机类型以及有线或无线连接方式", "确认输出文件位置和所需画质指标"],
+    "workflow": ["创建并连接相机组件", "配置拍照或录像参数", "采集媒体", "执行质量检查", "关闭设备"]
+  },
+  {
+    "id": "ui_automation",
+    "title": "Appium UI 自动化",
+    "description": "通过 Appium 定位元素并执行点击、输入、滑动等 UI 操作。",
+    "keywords": ["appium", "ui自动化", "界面自动化", "元素", "点击", "滑动", "输入", "locator", "click", "swipe"],
+    "components": ["ark_appium", "ark_mobile"],
+    "preferred_names": ["create_object", "connect", "find_element", "click", "send_keys", "swipe", "screenshot", "close"],
+    "prerequisites": ["确认 Appium 服务及设备连接正常", "优先准备资源 ID、文本或 XPath 定位条件"],
+    "workflow": ["创建并连接 Appium 组件", "等待并定位元素", "执行交互", "验证界面状态", "关闭会话"]
+  },
+  {
+    "id": "protocol_commands",
+    "title": "存储协议标准命令与私有命令",
+    "description": "发送 eMMC、SD、USB 等标准命令或厂商私有命令。",
+    "keywords": ["标准命令", "私有命令", "协议命令", "emmc", "sd", "usb", "nvme", "cmd", "command", "vu"],
+    "components": ["ark_std_cmd", "ark_vu_cmd", "ark_ssd", "ark_device", "ark_buffer"],
+    "preferred_names": ["create_object", "open", "send_cmd", "read", "write", "get_response", "close"],
+    "prerequisites": ["确认设备协议、命令码和响应格式", "为数据阶段准备正确大小的 Buffer", "设置合理超时"],
+    "workflow": ["打开并初始化设备", "创建命令组件", "准备命令参数和 Buffer", "发送命令", "解析响应", "关闭设备"]
+  },
+  {
+    "id": "logging_reporting",
+    "title": "日志、报告与结果记录",
+    "description": "记录运行日志、比较数据、打包日志或更新平台报告。",
+    "keywords": ["日志", "报告", "打包日志", "记录结果", "logging", "log", "report", "pack"],
+    "components": ["ark_logging", "ark_platform_adapt", "ark_recorder"],
+    "preferred_names": ["debug", "info", "warning", "error", "record_buffer", "pack_logs", "update_report_file", "update_status"],
+    "prerequisites": ["确认日志目录、日志级别和平台运行环境"],
+    "workflow": ["配置日志", "记录运行信息", "记录异常或比较数据", "打包或上传报告"]
+  },
+  {
+    "id": "notification",
+    "title": "通知发送",
+    "description": "向邮件、企业微信或飞书等接收方发送测试通知。",
+    "keywords": ["通知", "消息", "邮件", "飞书", "企业微信", "机器人", "notify", "email", "feishu", "webhook"],
+    "components": ["ark_notify"],
+    "preferred_names": ["init", "send", "notify", "close"],
+    "prerequisites": ["准备接收者、Webhook 或邮件配置", "避免在日志中输出密钥"],
+    "workflow": ["初始化接收者", "构建消息", "发送通知", "检查返回码"]
+  },
+  {
+    "id": "firmware_upgrade",
+    "title": "固件或组件升级",
+    "description": "查询当前版本、执行本地升级并获取升级日志。",
+    "keywords": ["升级", "固件", "版本", "upgrade", "firmware", "version"],
+    "components": ["ark_upgradation"],
+    "preferred_names": ["create_object", "get_current_version", "start_local_upgrade", "get_upgrade_log"],
+    "prerequisites": ["确认升级包与设备型号匹配", "校验升级包路径和升级期间供电稳定性"],
+    "workflow": ["读取当前版本", "检查升级包", "执行升级", "读取升级日志", "验证目标版本"]
+  },
+  {
+    "id": "temperature_chamber",
+    "title": "温箱控制",
+    "description": "连接温箱、设置温度或运行模式并读取温度状态。",
+    "keywords": ["温箱", "温度", "高低温", "oven", "temperature", "chamber"],
+    "components": ["ark_oven"],
+    "preferred_names": ["create_object", "connect", "set_temperature", "get_temperature", "start", "stop", "disconnect"],
+    "prerequisites": ["确认温箱型号、连接方式和安全温度范围"],
+    "workflow": ["创建并连接温箱组件", "设置运行模式和温度", "启动并监测温度", "停止并断开连接"]
+  }
+]

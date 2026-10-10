@@ -1,0 +1,2773 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>制品管理系统</title>
+    <script src="./lib/tailwind/tailwindcss.js"></script>
+<link rel="stylesheet" href="./lib/font-awesome/css/font-awesome.min.css">
+<script src="./lib/chartjs/chart.umd.min.js"></script>
+
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // 明亮蓝（主色）
+                        secondary: '#06B6D4', // 青色（辅助色）
+                        success: '#10B981', // 绿色（成功色）
+                        warning: '#F59E0B', // 橙色（警告色）
+                        danger: '#EF4444', // 红色（危险色）
+                        dark: {
+                            950: '#030712', // 极深背景（全局背景）
+                            900: '#0F172A', // 深层背景（卡片/容器）
+                            800: '#1E293B', // 中层背景（表格行/输入框）
+                            700: '#334155', // 边框/分割线
+                            600: '#475569', // 次要文本
+                            500: '#64748B', // 提示文本
+                        },
+                        light: '#F8FAFC' // 主要文本色
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.35)',
+                        'card-hover': '0 8px 30px rgba(0, 0, 0, 0.45)',
+                        'button': '0 2px 10px rgba(59, 130, 246, 0.25)',
+                        'button-hover': '0 4px 15px rgba(59, 130, 246, 0.35)',
+                    },
+                    borderRadius: {
+                        'xl': '0.75rem',
+                        '2xl': '1rem',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .hover-lift {
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                            box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .hover-lift:hover {
+                transform: translateY(-4px);
+                box-shadow: var(--tw-shadow-card-hover);
+            }
+            .fade-in {
+                animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .slide-up {
+                animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .bg-grid {
+                background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                background-size: 24px 24px;
+                background-position: 0 0, 12px 12px;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+                background: theme('colors.dark.800');
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background: theme('colors.dark.600');
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: theme('colors.dark.500');
+            }
+            .input-focus {
+                @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary focus:transition-all;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium rounded-xl px-4 py-2 flex items-center justify-center space-x-1.5 transition-all hover:shadow-button-hover shadow-button;
+            }
+            .btn-secondary {
+                @apply bg-dark-800 hover:bg-dark-700 text-light border border-dark-700 font-medium rounded-xl px-4 py-2 flex items-center justify-center transition-all;
+            }
+            .badge {
+                @apply px-2.5 py-1 rounded-full text-xs font-medium transition-all;
+            }
+            
+            /* 限制更新内容框最多显示5行 */
+            .max-5-lines {
+                max-height: calc(1.5rem * 5); /* 假设行高为1.5rem */
+                overflow-y: auto;
+            }
+
+            /* Release Note版本卡片样式 */
+            .release-note-card {
+                background: theme('colors.dark.800');
+                border: 1px solid rgba(51, 65, 85, 0.4);
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                transition: border-color 0.2s;
+            }
+            .release-note-card:last-child {
+                margin-bottom: 0;
+            }
+            .release-note-card:hover {
+                border-color: rgba(59, 130, 246, 0.3);
+            }
+            .release-note-card .rn-header {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .release-note-card .rn-version {
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: theme('colors.light');
+            }
+            .release-note-card .rn-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.125rem 0.5rem;
+                border-radius: 9999px;
+                font-size: 0.7rem;
+                font-weight: 500;
+            }
+            .release-note-card .rn-badge.beta {
+                background: rgba(239, 68, 68, 0.15);
+                color: #EF4444;
+            }
+            .release-note-card .rn-badge.evt {
+                background: rgba(245, 158, 11, 0.15);
+                color: #F59E0B;
+            }
+            .release-note-card .rn-badge.release {
+                background: rgba(16, 185, 129, 0.15);
+                color: #10B981;
+            }
+            .release-note-card .rn-time {
+                font-size: 0.75rem;
+                color: theme('colors.dark.500');
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+            .release-note-card .rn-desc {
+                font-size: 0.8125rem;
+                color: theme('colors.dark.400');
+                line-height: 1.6;
+            }
+            .release-note-card .rn-desc-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.375rem;
+                margin-bottom: 0.25rem;
+            }
+            .release-note-card .rn-desc-item:last-child {
+                margin-bottom: 0;
+            }
+            .release-note-card .rn-desc-bullet {
+                color: theme('colors.primary');
+                margin-top: 0.25rem;
+                flex-shrink: 0;
+                font-size: 0.5rem;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            /*增加弹窗的样式 顺便能够处理一下超长的制品名*/
+            .accept-modal-message {
+                word-break: break-all;
+                white-space: normal;
+            }
+
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.left-3\.5{left:0.875rem}.right-4{right:1rem}.top-0{top:0px}.top-1\/2{top:50%}.top-4{top:1rem}.top-8{top:2rem}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.m-4{margin:1rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-10{margin-bottom:2.5rem}.mb-2{margin-bottom:0.5rem}.mb-2\.5{margin-bottom:0.625rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.ml-3{margin-left:0.75rem}.mr-1{margin-right:0.25rem}.mr-1\.5{margin-right:0.375rem}.mr-2{margin-right:0.5rem}.mt-1{margin-top:0.25rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.ml-auto{margin-left:auto}.mr-3{margin-right:0.75rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1\.5{height:0.375rem}.h-12{height:3rem}.h-24{height:6rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-full{height:100%}.max-h-48{max-height:12rem}.max-h-\[85vh\]{max-height:85vh}.max-h-\[90vh\]{max-height:90vh}.min-h-screen{min-height:100vh}.w-1\/3{width:33.333333%}.w-12{width:3rem}.w-2\/5{width:40%}.w-24{width:6rem}.w-3\/4{width:75%}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-\[200px\]{max-width:200px}.max-w-\[calc\(100\%-40px\)\]{max-width:calc(100% - 40px)}.max-w-full{max-width:100%}.max-w-md{max-width:28rem}.max-w-xs{max-width:20rem}.max-w-\[150px\]{max-width:150px}.flex-1{flex:1 1 0%}.flex-grow{flex-grow:1}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.cursor-not-allowed{cursor:not-allowed}.resize-none{resize:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.whitespace-pre-line{white-space:pre-line}.text-balance{text-wrap:balance}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded-t-2xl{border-top-left-radius:1rem;border-top-right-radius:1rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-dark-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-dark-700\/30{border-color:rgb(51 65 85 / 0.3)}.border-dark-700\/50{border-color:rgb(51 65 85 / 0.5)}.border-primary{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.bg-black\/70{background-color:rgb(0 0 0 / 0.7)}.bg-dark-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-dark-800\/50{background-color:rgb(30 41 59 / 0.5)}.bg-dark-800\/80{background-color:rgb(30 41 59 / 0.8)}.bg-dark-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-dark-950{--tw-bg-opacity:1;background-color:rgb(3 7 18 / var(--tw-bg-opacity, 1))}.bg-primary\/10{background-color:rgb(59 130 246 / 0.1)}.bg-secondary\/10{background-color:rgb(6 182 212 / 0.1)}.bg-success\/10{background-color:rgb(16 185 129 / 0.1)}.bg-dark-700{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.bg-success{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-primary{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-primary{--tw-gradient-from:#3B82F6 var(--tw-gradient-from-position);--tw-gradient-to:rgb(59 130 246 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-secondary{--tw-gradient-from:#06B6D4 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 182 212 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-success{--tw-gradient-from:#10B981 var(--tw-gradient-from-position);--tw-gradient-to:rgb(16 185 129 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-primary\/60{--tw-gradient-to:rgb(59 130 246 / 0.6) var(--tw-gradient-to-position)}.to-secondary\/60{--tw-gradient-to:rgb(6 182 212 / 0.6) var(--tw-gradient-to-position)}.to-success\/60{--tw-gradient-to:rgb(16 185 129 / 0.6) var(--tw-gradient-to-position)}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-8{padding-top:2rem;padding-bottom:2rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.pb-3{padding-bottom:0.75rem}.pb-4{padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pl-10{padding-left:2.5rem}.pr-2{padding-right:0.5rem}.pr-4{padding-right:1rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.font-inter{font-family:Inter, system-ui, sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.text-danger{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-dark-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-light{--tw-text-opacity:1;color:rgb(248 250 252 / var(--tw-text-opacity, 1))}.text-primary{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-secondary{--tw-text-opacity:1;color:rgb(6 182 212 / var(--tw-text-opacity, 1))}.text-success{--tw-text-opacity:1;color:rgb(16 185 129 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-warning{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-50{opacity:0.5}.shadow-card{--tw-shadow:0 4px 20px rgba(0, 0, 0, 0.35);--tw-shadow-colored:0 4px 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-700{transition-duration:700ms}.ease-out{transition-timing-function:cubic-bezier(0, 0, 0.2, 1)}.hover-lift {
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                            box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }.hover-lift:hover {
+                transform: translateY(-4px);
+                box-shadow: var(--tw-shadow-card-hover);
+            }.fade-in {
+                animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }.slide-up {
+                animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }.text-balance {
+                text-wrap: balance;
+            }.bg-grid {
+                background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                background-size: 24px 24px;
+                background-position: 0 0, 12px 12px;
+            }.scrollbar-thin {
+                scrollbar-width: thin;
+            }.scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }.scrollbar-thin::-webkit-scrollbar-track {
+                background: #1E293B;
+                border-radius: 3px;
+            }.scrollbar-thin::-webkit-scrollbar-thumb {
+                background: #475569;
+                border-radius: 3px;
+            }.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: #64748B;
+            }.input-focus:focus{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1));outline:2px solid transparent;outline-offset:2px;--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);--tw-ring-color:rgb(59 130 246 / 0.5);transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.btn-primary{display:flex;align-items:center;justify-content:center}.btn-primary > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.btn-primary{border-radius:0.75rem;--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1));padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;font-weight:500;--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1));--tw-shadow:0 2px 10px rgba(59, 130, 246, 0.25);--tw-shadow-colored:0 2px 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.btn-primary:hover{background-color:rgb(59 130 246 / 0.9);--tw-shadow:0 4px 15px rgba(59, 130, 246, 0.35);--tw-shadow-colored:0 4px 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.btn-secondary{display:flex;align-items:center;justify-content:center;border-radius:0.75rem;border-width:1px;--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1));--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1));padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;font-weight:500;--tw-text-opacity:1;color:rgb(248 250 252 / var(--tw-text-opacity, 1));transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.btn-secondary:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.badge{border-radius:9999px;padding-left:0.625rem;padding-right:0.625rem;padding-top:0.25rem;padding-bottom:0.25rem;font-size:0.75rem;line-height:1rem;font-weight:500;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}/* 限制更新内容框最多显示5行 */.max-5-lines {
+                max-height: calc(1.5rem * 5); /* 假设行高为1.5rem */
+                overflow-y: auto;
+            }/* Release Note版本卡片样式 */@keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }@keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }/*增加弹窗的样式 顺便能够处理一下超长的制品名*/.accept-modal-message {
+                word-break: break-all;
+                white-space: normal;
+            }
+        .placeholder\:text-dark-500::placeholder{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}
+        .focus-within\:text-primary:focus-within{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}
+        .hover\:border-primary:hover{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}
+        .hover\:bg-dark-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}
+        .hover\:bg-dark-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}
+        .hover\:bg-primary\/20:hover{background-color:rgb(59 130 246 / 0.2)}
+        .hover\:bg-secondary\/20:hover{background-color:rgb(6 182 212 / 0.2)}
+        .hover\:bg-success\/20:hover{background-color:rgb(16 185 129 / 0.2)}
+        .hover\:bg-white\/10:hover{background-color:rgb(255 255 255 / 0.1)}
+        .hover\:bg-dark-800\/50:hover{background-color:rgb(30 41 59 / 0.5)}
+        .hover\:bg-primary\/10:hover{background-color:rgb(59 130 246 / 0.1)}
+        .hover\:bg-success\/10:hover{background-color:rgb(16 185 129 / 0.1)}
+        .hover\:text-danger:hover{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}
+        .hover\:text-light:hover{--tw-text-opacity:1;color:rgb(248 250 252 / var(--tw-text-opacity, 1))}
+        .hover\:text-primary\/80:hover{color:rgb(59 130 246 / 0.8)}
+        .hover\:text-gray-200:hover{--tw-text-opacity:1;color:rgb(229 231 235 / var(--tw-text-opacity, 1))}
+        .hover\:text-primary:hover{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}
+        .hover\:text-success\/80:hover{color:rgb(16 185 129 / 0.8)}
+        .hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
+        .focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}
+        .focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}
+        .focus\:ring-primary:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}
+        @media (min-width: 640px){.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:w-64{width:16rem}.sm\:w-auto{width:auto}.sm\:max-w-none{max-width:none}.sm\:max-w-\[200px\]{max-width:200px}.sm\:flex-grow-0{flex-grow:0}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}}
+        @media (min-width: 1024px){.lg\:col-span-4{grid-column:span 4 / span 4}.lg\:col-span-8{grid-column:span 8 / span 8}.lg\:w-80{width:20rem}.lg\:max-w-\[250px\]{max-width:250px}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}
+    </style></head>
+<body class="font-inter bg-dark-950 text-light min-h-screen flex flex-col bg-grid antialiased">
+    <!-- 主要内容区 -->
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            <div class="bg-dark-900 rounded-2xl p-6 shadow-card hover-lift border border-dark-700/50">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <p class="text-dark-500 text-sm mb-1.5">制品总数</p>
+                        <h3 id="total-tools" class="text-2xl sm:text-3xl font-bold">87</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary transition-all hover:bg-primary/20">
+                        <i class="fa fa-cubes text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-1 h-1.5 bg-dark-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-primary to-primary/60 w-1/3 rounded-full transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+            
+            <div class="bg-dark-900 rounded-2xl p-6 shadow-card hover-lift border border-dark-700/50">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <p class="text-dark-500 text-sm mb-1.5">版本总数</p>
+                        <h3 id="total-versions" class="text-2xl sm:text-3xl font-bold">229</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary transition-all hover:bg-secondary/20">
+                        <i class="fa fa-code-fork text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-1 h-1.5 bg-dark-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-secondary to-secondary/60 w-2/5 rounded-full transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+            
+            <div class="bg-dark-900 rounded-2xl p-6 shadow-card hover-lift border border-dark-700/50">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <p class="text-dark-500 text-sm mb-1.5">下载次数</p>
+                        <h3 id="total-downloads" class="text-2xl sm:text-3xl font-bold">4179</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center text-success transition-all hover:bg-success/20">
+                        <i class="fa fa-download text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-1 h-1.5 bg-dark-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-success to-success/60 w-3/4 rounded-full transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 制品管理区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- 左侧：制品列表 -->
+            <div class="lg:col-span-8">
+                <div class="bg-dark-900 rounded-2xl shadow-card overflow-hidden border border-dark-700/50 slide-up">
+                    <div class="p-6 border-b border-dark-700/50 flex flex-col sm:flex-row justify-between items-start-start sm:items-center gap-4">
+                        <h2 class="text-xl font-bold">制品列表</h2>
+                        
+                        <div class="flex flex-wrap gap-3 w-full sm:w-auto">
+                            <div class="relative flex-grow sm:flex-grow-0 w-full sm:w-64 lg:w-80">
+                                <input id="search-tool" type="text" placeholder="搜索制品或版本..." class="w-full pl-10 pr-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light placeholder:text-dark-500 transition-all">
+                                <i class="fa fa-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-dark-500 transition-colors focus-within:text-primary"></i>
+                            </div>
+                            
+                            <button id="upload-tool-btn" class="btn-primary">
+                                <i class="fa fa-plus"></i>
+                                <span>上传新制品</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto scrollbar-thin">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-dark-800/80">
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center">制品名称</th>
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center">版本数</th>
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center">最新版本</th>
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center" title="Beta: 已通过开发团队自测、内部 Alpha 测试（若有）及基础质量校验，但未经过正式版本所需的完整流程的版本
+EVT: 通过EVT评审的版本
+Release: 通过DVT评审的版本">状态</th>
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center">创建时间</th>
+                                    <th class="px-6 py-4 text-sm font-medium text-dark-500 text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tools-table-body">
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="9300_6877_power_control">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="9300_6877_power_control">9300_6877_power_control</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">1</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">1.0.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-warning"></i>
+                                <span class="text-light">EVT</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2026-07-02 15:20:52</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="9300_6877_power_control">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="9300_6877_power_control">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="APE_Protocol_Parser">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="APE_Protocol_Parser">APE_Protocol_Parser</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">1</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">1.0.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-success"></i>
+                                <span class="text-light">Release</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2025-09-02 13:24:32</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="APE_Protocol_Parser">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="APE_Protocol_Parser">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="APE_Protocol_Replayer">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="APE_Protocol_Replayer">APE_Protocol_Replayer</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">2</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">2.0.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-warning"></i>
+                                <span class="text-light">EVT</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2026-06-30 20:15:27</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="APE_Protocol_Replayer">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="APE_Protocol_Replayer">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="ark_mobile_ADBRecovery">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="ark_mobile_ADBRecovery">ark_mobile_ADBRecovery</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">1</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">1.0.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-warning"></i>
+                                <span class="text-light">EVT</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2026-08-19 19:00:00</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="ark_mobile_ADBRecovery">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="ark_mobile_ADBRecovery">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="ark_mobile_FileHelper">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="ark_mobile_FileHelper">ark_mobile_FileHelper</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">1</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">1.0.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-warning"></i>
+                                <span class="text-light">EVT</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2026-08-19 18:58:56</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="ark_mobile_FileHelper">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="ark_mobile_FileHelper">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="ATMS插件">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="ATMS插件">ATMS插件</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">4</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">1.3.0</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa fa-check-circle mr-2 text-success"></i>
+                                <span class="text-light">Release</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">2025-12-11 13:37:43</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="ATMS插件">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="ATMS插件">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="pagination" class="p-6 border-t border-dark-700/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="text-sm text-dark-500">
+                            显示 <span id="showing-range" class="text-light">1-6</span> 条，共 <span id="total-count" class="text-light">87</span> 条
+                        </div>
+                        <div class="flex space-x-2" id="pagination-btn-container"><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-dark-500 opacity-50 cursor-not-allowed bg-dark-800/50"><i class="fa fa-angle-left"></i></button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-primary bg-primary text-white">1</button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-light bg-dark-800/50 hover:border-primary hover:text-primary transition-all">2</button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-light bg-dark-800/50 hover:border-primary hover:text-primary transition-all">3</button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-light bg-dark-800/50 hover:border-primary hover:text-primary transition-all">4</button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-light bg-dark-800/50 hover:border-primary hover:text-primary transition-all">5</button><button class="pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border border-dark-700 text-light hover:border-primary hover:text-primary bg-dark-800/50 transition-all"><i class="fa fa-angle-right"></i></button></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：版本详情 -->
+            <div id="version-details" class="hidden lg:col-span-4">
+                <div class="bg-dark-900 rounded-2xl shadow-card overflow-hidden border border-dark-700/50 sticky top-8 slide-up">
+                    <div class="p-6 border-b border-dark-700/30 flex justify-between items-center">
+                        <h2 id="version-tool-name" class="text-xl font-bold truncate max-w-[200px] sm:max-w-none" title="">制品版本详情</h2>
+                        <button id="close-version-btn" class="w-9 h-9 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-2 pb-3 border-b border-dark-700/30">
+                            <!-- 修改：基本信息和按钮组合 -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fa fa-info-circle text-primary text-lg"></i>
+                                    <h3 class="font-medium text-lg">基本信息</h3>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button id="view-tool-purpose-btn" class="text-primary text-sm hover:underline focus:outline-none focus:ring-1 focus:ring-primary">
+                                        <i class="fa fa-bookmark-o mr-1"></i>Release Note
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="bg-dark-800/50 p-1 rounded-xl border border-dark-700/30">
+                                    <p class="text-dark-500 mb-1">当前版本</p>
+                                    <p id="detail-version" class="font-medium">-</p>
+                                </div>
+                                <div class="bg-dark-800/50 p-1 rounded-xl border border-dark-700/30">
+                                    <p class="text-dark-500 mb-1">创建时间</p>
+                                    <p id="detail-create-time" class="font-medium">-</p>
+                                </div>
+                                <div class="bg-dark-800/50 p-1 rounded-xl border border-dark-700/30 sm:col-span-2">
+                                    <p class="text-dark-500 mb-1">版本状态</p>
+                                    <p id="detail-status" class="font-medium flex items-center">
+                                        <i class="fa fa-circle-o mr-2"></i>加载中...
+                                        <button id="view-update-btn" class="ml-3 text-primary text-sm hover:underline focus:outline-none focus:ring-1 focus:ring-primary">
+                                            查看版本信息
+                                        </button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2 pb-3 border-b border-dark-700/30">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fa fa-list-alt text-primary text-lg"></i>
+                                    <h3 class="font-medium text-lg">版本列表</h3>
+                                </div>
+                                <button id="upload-version-btn" class="text-primary hover:text-primary/80 text-sm flex items-center transition-colors">
+                                    <i class="fa fa-plus-circle mr-1.5"></i> 上传新版本
+                                </button>
+                            </div>
+                            <div class="max-h-48 overflow-y-auto pr-2 scrollbar-thin" id="versions-list-container">
+                                <ul id="versions-list" class="space-y-3">
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="download-version-btn" class="btn-primary flex-1">
+                                <i class="fa fa-download"></i>
+                                <span>下载当前版本</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：空状态 -->
+            <div id="empty-state" class="lg:col-span-4 flex flex-col items-center justify-center p-8 bg-dark-900 rounded-2xl shadow-card border border-dark-700/50 hover-lift">
+                <div class="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-5">
+                    <i class="fa fa-cube text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2.5">选择一个制品查看详情</h3>
+                <p class="text-dark-500 text-center mb-6 max-w-xs text-balance">
+                    从左侧列表中选择一个制品，查看其基本信息、版本列表和上传新版本
+                </p>
+                <button id="empty-upload-btn" class="btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span>上传新制品</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark-900 border-t border-dark-700/30 py-5 mt-12">
+        <div class="container mx-auto px-4 text-center text-dark-500 text-sm">
+            <p>© 2025 制品管理系统 | 版本 1.0.0</p>
+        </div>
+    </footer>
+
+    <!-- 上传制品模态框 -->
+    <div id="upload-tool-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden fade-in backdrop-blur-sm">
+        <div class="bg-dark-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-dark-700/50 shadow-lg m-4 slide-up">
+            <div class="p-4 border-b border-dark-700/30 flex justify-between items-center sticky top-0 bg-dark-900 z-10">
+                <h3 class="text-lg font-bold">上传新制品</h3>
+                <button id="close-upload-tool-modal" class="w-7 h-7 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                    <i class="fa fa-times text-sm"></i>
+                </button>
+            </div>
+            
+            <form id="upload-tool-form" class="p-4 space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5" for="tool-name">制品名称 <span class="text-danger">*</span></label>
+                    <input type="text" id="tool-name" name="tool-name" required="" class="w-full px-3.5 py-2 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light text-sm">
+                    <p class="mt-1 text-xs text-dark-500">请输入制品的名称，用于标识和管理</p>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5" for="tool-version">初始版本 <span class="text-danger">*</span></label>
+                    <input type="text" id="tool-version" name="tool-version" value="1.0.0" required="" class="w-full px-3.5 py-2 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light text-sm">
+                    <p class="mt-1 text-xs text-dark-500">请输入版本号，建议遵循语义化版本规范（如：1.0.0）</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5" for="release-note">制品说明 <span class="text-danger">*</span></label>
+                    <textarea id="release-note" name="release-note" rows="3" required="" class="w-full px-3.5 py-2 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light resize-none text-sm" placeholder="请描述此制品..."></textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-xs text-dark-500">简要描述该版本的新功能、改进或修复内容</p>
+                        <p class="text-xs" id="release-note-counter">0/2048 字节</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5">上传文件 <span class="text-danger">*</span></label>
+                    <div class="mt-1 border-2 border-dashed border-dark-700 rounded-xl p-3 text-center hover:border-primary transition-colors cursor-pointer bg-dark-800/50" id="drop-area">
+                        <input type="file" id="tool-file" name="tool-file" accept=".zip,.tar.gz" class="hidden">
+                        <i class="fa fa-cloud-upload text-xl text-dark-500 mb-2"></i>
+                        <p class="text-dark-500 text-sm mb-1">点击或拖拽文件到此处上传</p>
+                        <p class="text-xs text-dark-500">支持格式：ZIP、tar.gz（最大 50GB）</p>
+                        <div id="file-preview" class="mt-2 hidden">
+                            <div class="flex items-center justify-between p-2 bg-dark-800 rounded-xl border border-dark-700/50">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fa fa-file-archive-o text-primary text-sm"></i>
+                                    <span id="preview-filename" class="text-xs truncate max-w-xs"></span>
+                                </div>
+                                <button type="button" id="remove-file" class="w-6 h-6 rounded-full flex items-center justify-center text-dark-500 hover:text-danger hover:bg-dark-700 transition-colors">
+                                    <i class="fa fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2 pt-2 border-t border-dark-700/30">
+                    <button type="button" id="cancel-upload-tool" class="btn-secondary text-sm py-1.5 px-3">
+                        取消
+                    </button>
+                    <button type="submit" class="btn-primary text-sm py-1.5 px-3">
+                        上传制品
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 上传版本模态框 -->
+    <div id="upload-version-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden fade-in backdrop-blur-sm">
+        <div class="bg-dark-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-dark-700/50 shadow-card m-4 slide-up">
+            <div class="p-5 border-b border-dark-700/30 flex justify-between items-center sticky top-0 bg-dark-900 z-10">
+                <h3 id="upload-version-title" class="text-lg font-bold truncate" title="">上传新版本</h3>
+                <button id="close-upload-version-modal" class="w-8 h-8 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="upload-version-form" class="p-5 space-y-4">
+                <input type="hidden" id="current-tool-name" name="current-tool-name">
+                
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5" for="new-version">版本号 <span class="text-danger">*</span></label>
+                    <input type="text" id="new-version" name="new-version" required="" class="w-full px-3.5 py-2 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light text-sm">
+                    <p class="mt-1 text-xs text-dark-500">请输入新版本号，建议遵循语义化版本规范（如：1.1.0）</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5" for="new-release-note">更新说明 <span class="text-danger">*</span></label>
+                    <textarea id="new-release-note" name="new-release-note" rows="3" required="" class="w-full px-3.5 py-4 bg-dark-800 border border-dark-700 rounded-xl input-focus text-light resize-none text-sm" placeholder="请描述此版本的更新内容..."></textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-xs text-dark-500">简要描述该版本的新功能、改进或修复内容</p>
+                        <p class="text-xs" id="new-release-note-counter">0/2048 字节</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-light mb-1.5">上传文件 <span class="text-danger">*</span></label>
+                    <div class="mt-1 border-2 border-dashed border-dark-700 rounded-xl p-4 text-center hover:border-primary transition-colors cursor-pointer bg-dark-800/50" id="version-drop-area">
+                        <input type="file" id="version-file" name="version-file" accept=".zip,.tar.gz" class="hidden">
+                        <i class="fa fa-cloud-upload text-2xl text-dark-500 mb-2"></i>
+                        <p class="text-dark-500 text-sm mb-1">点击或拖拽文件到此处上传</p>
+                        <p class="text-xs text-dark-500">支持格式：ZIP、tar.gz（最大 50GB）</p>
+                        <div id="version-file-preview" class="mt-3 hidden">
+                            <div class="flex items-center justify-between p-2 bg-dark-800 rounded-xl border border-dark-700/50">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fa fa-file-archive-o text-primary"></i>
+                                    <span id="version-preview-filename" class="text-xs truncate max-w-xs"></span>
+                                </div>
+                                <button type="button" id="remove-version-file" class="w-7 h-7 rounded-full flex items-center justify-center text-dark-500 hover:text-danger hover:bg-dark-700 transition-colors">
+                                    <i class="fa fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2 pt-3 border-t border-dark-700/30">
+                    <button type="button" id="cancel-upload-version" class="btn-secondary text-sm py-2 px-3">
+                        取消
+                    </button>
+                    <button type="submit" class="btn-primary text-sm py-2 px-3">
+                        上传版本
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 更新内容弹框 -->
+    <div id="update-content-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden fade-in backdrop-blur-sm">
+        <div class="bg-dark-900 rounded-2xl w-full max-w-md border border-dark-700/50 shadow-card m-4 slide-up">
+            <div class="p-6 border-b border-dark-700/30 flex justify-between items-center sticky top-0 bg-dark-900 z-10">
+                <h3 id="update-modal-title" class="text-xl font-bold truncate whitespace-nowrap max-w-[calc(100%-40px)]">版本描述</h3>
+                <button id="close-update-modal" class="w-9 h-9 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div id="update-loading" class="text-center py-8 hidden">
+                    <i class="fa fa-spinner fa-spin text-primary text-xl mb-3"></i>
+                    <p class="text-dark-500">加载更新记录中...</p>
+                </div>
+                
+                <div id="update-content" class="text-light mb-6 hidden">
+                    <div class="mb-4 pb-4 border-b border-dark-700/30">
+                        <p class="text-sm text-dark-500 mb-1">制品名称</p>
+                        <p id="update-tool-name" class="font-medium truncate max-w-full whitespace-nowrap"></p>
+                    </div>
+                    
+                    <div class="mb-4 pb-4 border-b border-dark-700/30">
+                        <p class="text-sm text-dark-500 mb-1">版本号</p>
+                        <p id="update-version" class="font-medium"></p>
+                    </div>
+                    
+                    <div class="mb-4 pb-4 border-b border-dark-700/30">
+                        <p class="text-sm text-dark-500 mb-1">版本时间</p>
+                        <p id="update-time" class="font-medium text-dark-500"></p>
+                    </div>
+                    
+                    <div>
+                        <p class="text-sm text-dark-500 mb-2">版本描述</p>
+                        <div id="update-content-text" class="bg-dark-800/50 p-3 rounded-lg border border-dark-700/30 text-sm leading-relaxed whitespace-pre-line max-5-lines scrollbar-thin"></div>
+                    </div>
+                </div>
+                
+                <div id="update-error" class="text-center py-8 text-danger hidden">
+                    <i class="fa fa-exclamation-circle text-xl mb-3"></i>
+                    <p>获取更新记录失败</p>
+                    <p class="text-sm text-dark-500 mt-2">该版本可能没有更新记录</p>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button id="close-update-btn" class="btn-primary">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Release Note弹框 -->
+    <div id="tool-purpose-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden fade-in backdrop-blur-sm">
+        <div class="bg-dark-900 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-dark-700/50 shadow-card m-4 slide-up">
+            <div class="p-6 border-b border-dark-700/30 flex justify-between items-center sticky top-0 bg-dark-900 z-10 rounded-t-2xl">
+                <h3 id="purpose-modal-title" class="text-xl font-bold truncate whitespace-nowrap max-w-[calc(100%-40px)]">Release Note</h3>
+                <button id="close-purpose-modal" class="w-9 h-9 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto scrollbar-thin flex-1">
+                <div id="purpose-loading" class="text-center py-8 hidden">
+                    <i class="fa fa-spinner fa-spin text-primary text-xl mb-3"></i>
+                    <p class="text-dark-500">加载Release Note中...</p>
+                </div>
+
+                <div id="purpose-content" class="text-light mb-6 hidden">
+                    <div class="mb-4 pb-4 border-b border-dark-700/30">
+                        <p class="text-sm text-dark-500 mb-1">制品名称</p>
+                        <p id="purpose-tool-name" class="font-medium truncate max-w-full whitespace-nowrap"></p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-dark-500 mb-3">Release Note</p>
+                        <div id="purpose-content-text"></div>
+                    </div>
+                </div>
+
+                <div id="purpose-error" class="text-center py-8 text-danger hidden">
+                    <i class="fa fa-exclamation-circle text-xl mb-3"></i>
+                    <p>获取Release Note失败</p>
+                    <p class="text-sm text-dark-500 mt-2">该制品可能没有Release Note信息</p>
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="close-purpose-btn" class="btn-primary">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- 验收确认弹框 -->
+    <div id="accept-modal" class="fixed inset-0 bg-black/70 z-40 flex items-center justify-center hidden fade-in backdrop-blur-sm">
+        <div class="bg-dark-900 rounded-2xl w-full max-w-md border border-dark-700/50 shadow-card m-4 slide-up">
+            <div class="p-6 border-b border-dark-700/30 flex justify-between items-center sticky top-0 bg-dark-900 z-10">
+                <!-- 标题为制品名 -->
+                <h3 id="accept-modal-title" class="text-xl font-semibold truncate whitespace-nowrap max-w-[calc(100%-40px)]">
+                    制品名称
+                </h3>
+                <button id="close-accept-modal" class="w-9 h-9 rounded-full flex items-center justify-center text-dark-500 hover:text-light hover:bg-dark-800 transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+<!--                // 这里增加的自定义弹窗-->
+                <p id="accept-modal-message" class="text-light leading-relaxed accept-modal-message">
+                </p>
+
+            </div>
+
+            <div class="px-6 pb-6 flex justify-end space-x-3">
+                <button id="accept-modal-no" class="btn-secondary px-4 py-2 text-sm">
+                    否
+                </button>
+                <button id="accept-modal-yes" class="btn-primary px-4 py-2 text-sm">
+                    是
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 通知提示框 -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col space-y-3">
+    </div>
+
+    <script>
+        // 配置常量
+        const CONFIG = {
+            API_BASE_URL: 'http://10.2.18.22:5000',
+            MAX_FILE_SIZE: 50 * 1024 * 1024 * 1024, // 50GB
+            PAGE_SIZE: 6, // 每页显示数量
+            MAX_RELEASE_NOTE_BYTES: 2048 // 更新说明最大字节数
+        };
+
+        // 全局变量
+        let currentTool = null;
+        let currentVersion = null;
+        let toolsData = [];
+        let currentPage = 1; // 当前页码
+        let fileUploaderInitialized = false; // 标记文件上传器是否已初始化
+        let isFileProcessing = false; // 防止文件处理并发导致的卡死
+        let filteredToolsData = null;
+
+        // 新增：制品状态验收权限标记
+        let hasToolStatusApprovalPermission = false;       // 当前 IP 是否有验收权限
+        let hasCheckedToolStatusApprovalPermission = false; // 是否已经检查过（避免重复请求）
+
+        function getActiveData() {
+            return filteredToolsData || toolsData;
+        }
+
+        // 计算文本的字节数（考虑中文字符）
+        function getTextByteLength(text) {
+            // 使用TextEncoder计算UTF-8编码的字节长度
+            return new TextEncoder().encode(text).length;
+        }
+
+        // 限制文本框的字节数
+        function limitTextByBytes(textarea, maxBytes, counterElement) {
+            const text = textarea.value;
+            const currentBytes = getTextByteLength(text);
+            
+            // 更新计数器并设置颜色
+            counterElement.textContent = `${currentBytes}/${maxBytes} 字节`;
+            if (currentBytes > maxBytes) {
+                counterElement.classList.add('text-danger');
+            } else {
+                counterElement.classList.remove('text-danger');
+            }
+            
+            // 如果超过最大字节数，截断文本
+            if (currentBytes > maxBytes) {
+                let truncatedText = text;
+                let tempBytes = currentBytes;
+                
+                // 从末尾开始截断，直到字节数符合要求
+                while (tempBytes > maxBytes && truncatedText.length > 0) {
+                    truncatedText = truncatedText.substring(0, truncatedText.length - 1);
+                    tempBytes = getTextByteLength(truncatedText);
+                }
+                
+                textarea.value = truncatedText;
+                counterElement.textContent = `${tempBytes}/${maxBytes} 字节`;
+                return false;
+            }
+            return true;
+        }
+
+        // 新增：检查当前 IP 是否有制品状态验收权限
+        async function checkToolStatusApprovalPermission() {
+            if (hasCheckedToolStatusApprovalPermission) return;
+            hasCheckedToolStatusApprovalPermission = true;
+
+            try {
+                const url = new URL(`${CONFIG.API_BASE_URL}/tools/status`);
+                // 不传任何参数，仅用于触发后端 IP 白名单校验：
+                // - 有权限：通过 IP 校验后再因为参数不完整返回 400
+                // - 无权限：直接返回 403，message 为“IP地址 xxx 没有审批权限”
+                const response = await fetch(url.toString(), { method: 'POST' });
+
+                if (response.status === 403) {
+                    hasToolStatusApprovalPermission = false;
+                } else {
+                    hasToolStatusApprovalPermission = true;
+                }
+            } catch (error) {
+                console.error('检查制品状态审批权限失败:', error);
+                // 出错时默认视为没有权限，保证安全
+                hasToolStatusApprovalPermission = false;
+            } finally {
+                // 如果已经选中了某个制品版本，重新刷新详情状态区域
+                if (currentTool && currentVersion) {
+                    updateDetailStatus(currentVersion.version, currentVersion);
+                }
+            }
+        }
+
+        // 判断制品最新版本的状态（3位→正常，4位→待验证）
+        // 判断制品版本状态（优先使用自带status，无则解析版本号）
+        function getToolStatus(version, versionObj = {}) {
+            // 优先使用版本数据中自带的status字段
+            if (versionObj.status && ['EVT', 'Beta', 'Release'].includes(versionObj.status)) {
+                let statusType = 'warning'
+                if (versionObj.status === 'Beta') {
+                    statusType = 'danger'
+                } else if (versionObj.status === 'Release') {
+                    statusType = 'success'
+                }
+                return { text: versionObj.status, type: statusType }; 
+            }
+            
+            // 无自带status时，按原逻辑解析版本号
+            const versionParts = version.split('.');
+            if (versionParts.length === 3) {
+                return { text: 'EVT', type: 'warning' }; // 改为黄色
+            } else {
+                return { text: 'Beta', type: 'danger' }; // 红色不变
+            }
+        }
+
+        // 更新详情页中的制品状态显示
+        function updateDetailStatus(version, versionObj = {}) {
+            const status = getToolStatus(version, versionObj);
+            let statusClass, statusIcon;
+
+            if (status.type === 'success') {
+                statusClass = 'text-success';
+                statusIcon = 'fa-check-circle'; // 绿色勾
+            } else if (status.type === 'danger') {
+                statusClass = 'text-danger';
+                statusIcon = 'fa-exclamation-circle'; // 红色感叹号
+            } else { // EVT 状态：黄色勾
+                statusClass = 'text-warning';
+                statusIcon = 'fa-check-circle';
+            }
+
+            // 基本状态 + “查看版本信息”按钮
+            let html = `
+                <i class="fa ${statusIcon} mr-2 ${statusClass}"></i>${status.text}
+                <button id="view-update-btn"
+                        class="ml-3 text-primary text-sm hover:underline focus:outline-none focus:ring-1 focus:ring-primary">
+                    查看版本信息
+                </button>
+            `;
+
+            // 验收按钮
+            if (status.type !== 'danger' && status.type !== 'success' && hasToolStatusApprovalPermission) {
+                html += `
+                    <button id="accept-version-btn"
+                            class="ml-3 text-primary text-sm hover:underline focus:outline-none focus:ring-1 focus:ring-primary">
+                        验收
+                    </button>
+                `;
+            }
+
+
+            const statusContainer = document.getElementById('detail-status');
+            statusContainer.innerHTML = html;
+
+            // 绑定“查看版本信息”按钮事件
+            const viewUpdateBtn = document.getElementById('view-update-btn');
+            if (viewUpdateBtn) {
+                viewUpdateBtn.addEventListener('click', openUpdateContentModal);
+            }
+
+            // 绑定“验收”按钮事件
+            const acceptBtn = document.getElementById('accept-version-btn');
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', openAcceptVersionModal);
+            }
+        }
+
+
+        // 获取版本更新记录
+        function fetchReleaseNote(toolName, version) {
+            // 显示加载状态
+            document.getElementById('update-loading').classList.remove('hidden');
+            document.getElementById('update-content').classList.add('hidden');
+            document.getElementById('update-error').classList.add('hidden');
+            
+            // 构建API URL
+            const url = new URL(`${CONFIG.API_BASE_URL}/tools/release_note`);
+            url.searchParams.append('tool_name', toolName);
+            url.searchParams.append('version', version);
+            
+            requestWithLoading(
+                url.toString(),
+                { method: 'GET' },
+                '正在获取更新记录...',
+                '', // 成功不显示提示，避免重复
+                '获取更新记录失败',
+                'json'
+            )
+            .then(data => {
+                // 隐藏加载状态，显示内容
+                document.getElementById('update-loading').classList.add('hidden');
+                document.getElementById('update-content').classList.remove('hidden');
+                
+                // 更新模态框标题
+                const updateModalTitle = document.getElementById('update-modal-title');
+                updateModalTitle.textContent = `${data.tool_name}-${data.version} 版本信息`;
+                updateModalTitle.title = updateModalTitle.textContent;
+                
+                // 填充数据
+                const updateToolName = document.getElementById('update-tool-name');
+                updateToolName.textContent = data.tool_name;
+                updateToolName.title = data.tool_name;
+                
+                // 格式化时间 - 添加秒数显示
+                const updateTime = data.update_time ? new Date(data.update_time) : new Date();
+                document.getElementById('update-time').textContent = 
+                    `${updateTime.getFullYear()}-${String(updateTime.getMonth() + 1).padStart(2, '0')}-${String(updateTime.getDate()).padStart(2, '0')} ${String(updateTime.getHours()).padStart(2, '0')}:${String(updateTime.getMinutes()).padStart(2, '0')}:${String(updateTime.getSeconds()).padStart(2, '0')}`;
+                
+                // 处理更新内容
+                document.getElementById('update-content-text').textContent = 
+                    data.content || '该版本未提供详细更新说明';
+            })
+            .catch(error => {
+                console.error('获取更新记录失败:', error);
+                // 显示错误状态
+                document.getElementById('update-loading').classList.add('hidden');
+                document.getElementById('update-error').classList.remove('hidden');
+            });
+        }
+
+        // 打开更新内容弹框
+        function openUpdateContentModal() {
+            if (currentTool && currentVersion) {
+                document.getElementById('update-content-modal').classList.remove('hidden');
+                // 获取并显示更新记录
+                fetchReleaseNote(currentTool.name, currentVersion.version);
+            }
+        }
+
+        function openAcceptVersionModal() {
+            if (!currentTool || !currentVersion) return;
+
+            const toolName = currentTool.name || '';
+            const selectedVersion = currentVersion.version || '';
+
+            // 计算“最新版本”信息
+            const latestVersion = currentTool.latestVersion;
+            let latestVersionObj = null;
+
+            if (Array.isArray(currentTool.versions)) {
+                latestVersionObj = currentTool.versions.find(v => v.version === latestVersion) || {};
+            } else {
+                latestVersionObj = {};
+            }
+
+            // 最新版本状态（EVT / Beta / Release）
+            const latestStatusInfo = getToolStatus(latestVersion, latestVersionObj);
+            const latestStatusText = latestStatusInfo.text || '';
+
+            // 选中版本状态（EVT / Beta / Release）
+            const selectedStatusInfo = getToolStatus(selectedVersion, currentVersion);
+            const selectedStatusText = selectedStatusInfo.text || '';
+            const isSelectedBeta = selectedStatusText === 'Beta';
+
+            const isLatestSelected = selectedVersion === latestVersion;
+
+            // 标题仍然用制品名
+            if (elements.acceptModalTitle) {
+                elements.acceptModalTitle.textContent = toolName;
+                elements.acceptModalTitle.title = toolName;
+            }
+
+            if (elements.acceptModalMessage) {
+                // 防止长制品名/版本把弹窗撑爆
+                elements.acceptModalMessage.style.wordBreak = 'break-all';
+                elements.acceptModalMessage.style.whiteSpace = 'normal';
+
+                let messageHtml = '';
+
+                if (isLatestSelected) {
+                    // 最新版本提示
+                    messageHtml =
+                        `请确认 <span class="font-semibold text-primary">${toolName} ${selectedVersion}</span> 版本 已通过DVT评审`;
+
+                    // 最新版本 + Beta 提示
+                    if (isSelectedBeta) {
+                        messageHtml +=
+                            `<br>
+                            <br><br>
+                             <span class="text-danger font-semibold">
+                                警告：当前选中制品版本为 Beta
+                             </span>`;
+                    }
+                } else {
+                    if (isSelectedBeta) {
+                        // 旧版本 + Beta 提示
+                        messageHtml =
+                            `请确认 <span class="font-semibold text-primary">${toolName} ${selectedVersion}</span> 版本 已通过DVT评审<br><br><br>
+                             <br>
+                             <span class="text-danger font-semibold">
+                                警告：当前选中制品版本为 Beta, 且当前制品有状态为${latestStatusText}的新版本v${latestVersion}
+                             </span>`;
+                    } else {
+                        // 纯旧版本提示
+                        messageHtml =
+                            `请确认 <span class="font-semibold text-primary">${toolName} ${selectedVersion}</span> 版本 已通过DVT评审<br><br><br>
+                             <span class="text-danger font-semibold">
+                                警告：当前制品有状态为${latestStatusText}的新版本v${latestVersion}
+                             </span>`;
+                    }
+                }
+
+                elements.acceptModalMessage.innerHTML = messageHtml;
+            }
+
+            if (elements.acceptModal) {
+                elements.acceptModal.classList.remove('hidden');
+            }
+        }
+
+
+
+
+        // 关闭验收确认弹框
+        function closeAcceptVersionModal() {
+            if (elements.acceptModal) {
+                elements.acceptModal.classList.add('hidden');
+            }
+        }
+
+        // 点击是 调用接口更新状态
+        async function handleAcceptVersionConfirm() {
+    if (!currentTool || !currentVersion) {
+        closeAcceptVersionModal();
+        return;
+    }
+
+    const toolName = currentTool.name;
+    const version = currentVersion.version;
+
+    const url = new URL(`${CONFIG.API_BASE_URL}/tools/status`);
+    url.searchParams.append('tool_name', toolName);
+    url.searchParams.append('version', version);
+    url.searchParams.append('status', 'Release'); // 验收后改为 Release
+
+    try {
+        const result = await requestWithLoading(
+            url.toString(),
+            { method: 'POST' },
+            '正在更新制品状态...',
+            '状态更新成功',
+            '状态更新失败'
+        );
+
+        if (result && result.status === 'success') {
+            // 更新当前版本对象
+            currentVersion.status = 'Release';
+            const versionObj = currentTool.versions.find(v => v.version === version);
+            if (versionObj) {
+                versionObj.status = 'Release';
+            }
+
+            // 刷新右侧详情
+            updateDetailStatus(currentVersion.version, currentVersion);
+            renderVersionsList(currentTool.versions);
+
+            // 刷新左侧制品列表
+            renderToolsTable();
+
+            // 关闭弹框
+            closeAcceptVersionModal();
+        }
+    } catch (err) {
+        console.error('更新制品版本状态失败:', err);
+        // requestWithLoading 已经弹出错误，这里不用再提示
+    }
+}
+
+
+
+        // 关闭更新内容弹框
+        function closeUpdateContentModal() {
+            document.getElementById('update-content-modal').classList.add('hidden');
+        }
+
+        // 将Release Note文本解析为结构化的版本卡片HTML
+        function formatReleaseNoteContent(text) {
+            if (!text || !text.trim()) {
+                return '<p class="text-dark-500 text-sm">该制品未提供Release Note</p>';
+            }
+
+            // 用正则匹配每个"版本 x.x.x.x（发布时间：...，状态：...）：描述"块
+            const versionRegex = /版本\s*([\d.]+)\s*（发布时间：([^，]+)，\s*状态：([^）]+)）\s*：\s*/g;
+            const entries = [];
+            let match;
+            const matchPositions = [];
+
+            while ((match = versionRegex.exec(text)) !== null) {
+                matchPositions.push({
+                    version: match[1],
+                    time: match[2].trim(),
+                    status: match[3].trim(),
+                    descStart: versionRegex.lastIndex
+                });
+            }
+
+            // 如果没有匹配到任何版本格式，原样展示（兼容旧格式）
+            if (matchPositions.length === 0) {
+                const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                return `<div class="bg-dark-800/50 p-3 rounded-lg border border-dark-700/30 text-sm leading-relaxed whitespace-pre-line">${escaped}</div>`;
+            }
+
+            // 提取每个版本的描述文本
+            for (let i = 0; i < matchPositions.length; i++) {
+                const start = matchPositions[i].descStart;
+                const end = i + 1 < matchPositions.length
+                    ? text.lastIndexOf('版本', matchPositions[i + 1].descStart)
+                    : text.length;
+                // 找到下一个"版本"关键字的位置作为截止
+                let descEnd = text.length;
+                if (i + 1 < matchPositions.length) {
+                    // 从当前描述开始位置往后找下一个"版本 x"
+                    const remaining = text.substring(start);
+                    const nextMatch = remaining.search(/版本\s*[\d.]+\s*（/);
+                    descEnd = nextMatch >= 0 ? start + nextMatch : text.length;
+                }
+                matchPositions[i].desc = text.substring(start, descEnd).trim();
+            }
+
+            // 生成HTML卡片（从新到旧排列）
+            const cards = matchPositions.reverse().map(entry => {
+                const badgeClass = entry.status === 'Beta' ? 'beta'
+                    : entry.status === 'Release' ? 'release' : 'evt';
+
+                // 把描述拆分为多条（按 数字、/ 数字）/ 换行 分割）
+                let descHtml = '';
+                const descText = entry.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                // 尝试按 "数字、" 分割多条
+                const items = descText.split(/(?=\d+[、．.])/);
+                if (items.length > 1) {
+                    descHtml = items.map(item => {
+                        const trimmed = item.trim();
+                        if (!trimmed) return '';
+                        return `<div class="rn-desc-item">
+                            <i class="fa fa-circle rn-desc-bullet"></i>
+                            <span>${trimmed}</span>
+                        </div>`;
+                    }).filter(Boolean).join('');
+                } else {
+                    descHtml = `<div class="rn-desc-item">
+                        <i class="fa fa-circle rn-desc-bullet"></i>
+                        <span>${descText || '无描述'}</span>
+                    </div>`;
+                }
+
+                return `<div class="release-note-card">
+                    <div class="rn-header">
+                        <span class="rn-version">v${entry.version}</span>
+                        <span class="rn-badge ${badgeClass}">${entry.status}</span>
+                    </div>
+                    <div class="rn-time">
+                        <i class="fa fa-clock-o"></i>
+                        <span>${entry.time}</span>
+                    </div>
+                    <div class="rn-desc" style="margin-top:0.5rem;">
+                        ${descHtml}
+                    </div>
+                </div>`;
+            }).join('');
+
+            return cards;
+        }
+
+        // 获取制品Release Note
+        function fetchToolPurpose(toolName) {
+            // 显示加载状态
+            document.getElementById('purpose-loading').classList.remove('hidden');
+            document.getElementById('purpose-content').classList.add('hidden');
+            document.getElementById('purpose-error').classList.add('hidden');
+
+            // 构建API URL
+            const url = new URL(`${CONFIG.API_BASE_URL}/tools/release_note`);
+            url.searchParams.append('tool_name', toolName);
+
+            fetch(url, { method: 'GET' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP状态码: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('purpose-loading').classList.add('hidden');
+                document.getElementById('purpose-content').classList.remove('hidden');
+
+                // 更新模态框标题
+                const purposeModalTitle = document.getElementById('purpose-modal-title');
+                purposeModalTitle.textContent = `${data.tool_name} Release Note`;
+                purposeModalTitle.title = purposeModalTitle.textContent;
+
+                // 填充数据
+                const purposeToolName = document.getElementById('purpose-tool-name');
+                purposeToolName.textContent = data.tool_name;
+                purposeToolName.title = data.tool_name;
+
+                // 使用格式化函数渲染Release Note
+                document.getElementById('purpose-content-text').innerHTML =
+                    formatReleaseNoteContent(data.content);
+            })
+            .catch(error => {
+                console.error('获取Release Note失败:', error);
+                document.getElementById('purpose-loading').classList.add('hidden');
+                document.getElementById('purpose-error').classList.remove('hidden');
+            });
+        }
+
+        // 打开Release Note弹框
+        function openToolPurposeModal() {
+            if (currentTool) {
+                document.getElementById('tool-purpose-modal').classList.remove('hidden');
+                fetchToolPurpose(currentTool.name);
+            }
+        }
+
+        // 关闭Release Note弹框
+        function closeToolPurposeModal() {
+            document.getElementById('tool-purpose-modal').classList.add('hidden');
+        }
+
+        // DOM元素
+        const elements = {
+            toolsTableBody: document.getElementById('tools-table-body'),
+            versionDetails: document.getElementById('version-details'),
+            emptyState: document.getElementById('empty-state'),
+            uploadToolBtn: document.getElementById('upload-tool-btn'),
+            emptyUploadBtn: document.getElementById('empty-upload-btn'),
+            searchTool: document.getElementById('search-tool'),
+            pagination: document.getElementById('pagination'),
+            closeVersionBtn: document.getElementById('close-version-btn'),
+            uploadVersionBtn: document.getElementById('upload-version-btn'),
+            downloadVersionBtn: document.getElementById('download-version-btn'),
+            
+            totalTools: document.getElementById('total-tools'),
+            totalVersions: document.getElementById('total-versions'),
+            totalDownloads: document.getElementById('total-downloads'),
+            
+            versionToolName: document.getElementById('version-tool-name'),
+            detailToolName: document.getElementById('detail-tool-name'),
+            detailVersion: document.getElementById('detail-version'),
+            detailCreateTime: document.getElementById('detail-create-time'),
+            detailStatus: document.getElementById('detail-status'),
+            versionsList: document.getElementById('versions-list'),
+            versionsListContainer: document.getElementById('versions-list-container'),
+            
+            uploadToolModal: document.getElementById('upload-tool-modal'),
+            closeUploadToolModal: document.getElementById('close-upload-tool-modal'),
+            cancelUploadTool: document.getElementById('cancel-upload-tool'),
+            uploadToolForm: document.getElementById('upload-tool-form'),
+            toolName: document.getElementById('tool-name'),
+            toolVersion: document.getElementById('tool-version'),
+            releaseNote: document.getElementById('release-note'),
+            releaseNoteCounter: document.getElementById('release-note-counter'),
+            toolFile: document.getElementById('tool-file'),
+            dropArea: document.getElementById('drop-area'),
+            filePreview: document.getElementById('file-preview'),
+            previewFilename: document.getElementById('preview-filename'),
+            removeFile: document.getElementById('remove-file'),
+            
+            uploadVersionModal: document.getElementById('upload-version-modal'),
+            closeUploadVersionModal: document.getElementById('close-upload-version-modal'),
+            cancelUploadVersion: document.getElementById('cancel-upload-version'),
+            uploadVersionForm: document.getElementById('upload-version-form'),
+            uploadVersionTitle: document.getElementById('upload-version-title'),
+            currentToolName: document.getElementById('current-tool-name'),
+            newVersion: document.getElementById('new-version'),
+            newReleaseNote: document.getElementById('new-release-note'),
+            newReleaseNoteCounter: document.getElementById('new-release-note-counter'),
+            versionFile: document.getElementById('version-file'),
+            versionDropArea: document.getElementById('version-drop-area'),
+            versionFilePreview: document.getElementById('version-file-preview'),
+            versionPreviewFilename: document.getElementById('version-preview-filename'),
+            removeVersionFile: document.getElementById('remove-version-file'),
+            
+            updateContentModal: document.getElementById('update-content-modal'),
+            closeUpdateModal: document.getElementById('close-update-modal'),
+            closeUpdateBtn: document.getElementById('close-update-btn'),
+            updateModalTitle: document.getElementById('update-modal-title'),
+            updateLoading: document.getElementById('update-loading'),
+            updateContent: document.getElementById('update-content'),
+            updateError: document.getElementById('update-error'),
+            updateToolName: document.getElementById('update-tool-name'),
+            updateVersion: document.getElementById('update-version'),
+            updateTime: document.getElementById('update-time'),
+            updateContentText: document.getElementById('update-content-text'),
+            
+            // Release Note相关元素
+            viewToolPurposeBtn: document.getElementById('view-tool-purpose-btn'),
+            toolPurposeModal: document.getElementById('tool-purpose-modal'),
+            closePurposeModal: document.getElementById('close-purpose-modal'),
+            closePurposeBtn: document.getElementById('close-purpose-btn'),
+            purposeModalTitle: document.getElementById('purpose-modal-title'),
+            purposeLoading: document.getElementById('purpose-loading'),
+            purposeContent: document.getElementById('purpose-content'),
+            purposeError: document.getElementById('purpose-error'),
+            purposeToolName: document.getElementById('purpose-tool-name'),
+            purposeVersion: document.getElementById('purpose-version'),
+            purposeContentText: document.getElementById('purpose-content-text'),
+
+            // 验收功能
+            acceptModal: document.getElementById('accept-modal'),
+            closeAcceptModal: document.getElementById('close-accept-modal'),
+            acceptModalTitle: document.getElementById('accept-modal-title'),
+            acceptModalMessage: document.getElementById('accept-modal-message'),
+            acceptModalYes: document.getElementById('accept-modal-yes'),
+            acceptModalNo: document.getElementById('accept-modal-no'),
+
+            viewUpdateBtn: document.getElementById('view-update-btn'),
+            
+            toastContainer: document.getElementById('toast-container'),
+            
+            showingRange: document.getElementById('showing-range'),
+            totalCount: document.getElementById('total-count'),
+            paginationBtnContainer: document.getElementById('pagination-btn-container')
+        };
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            loadToolsData();
+            bindEventListeners();
+            initFileUploader();
+            initReleaseNoteCounters();
+            // 检查IP 有验收权限
+            checkToolStatusApprovalPermission();
+        });
+
+
+        // 初始化更新说明计数器
+        function initReleaseNoteCounters() {
+            // 为上传制品的更新说明添加计数器
+            elements.releaseNote.addEventListener('input', () => {
+                limitTextByBytes(
+                    elements.releaseNote, 
+                    CONFIG.MAX_RELEASE_NOTE_BYTES, 
+                    elements.releaseNoteCounter
+                );
+            });
+            
+            // 为上传版本的更新说明添加计数器
+            elements.newReleaseNote.addEventListener('input', () => {
+                limitTextByBytes(
+                    elements.newReleaseNote, 
+                    CONFIG.MAX_RELEASE_NOTE_BYTES, 
+                    elements.newReleaseNoteCounter
+                );
+            });
+        }
+
+        // 绑定事件监听
+        function bindEventListeners() {
+            elements.uploadToolBtn.addEventListener('click', openUploadToolModal);
+            elements.emptyUploadBtn.addEventListener('click', openUploadToolModal);
+            elements.searchTool.addEventListener('input', filterTools);
+            elements.closeVersionBtn.addEventListener('click', closeVersionDetails);
+            elements.uploadVersionBtn.addEventListener('click', openUploadVersionModal);
+            elements.downloadVersionBtn.addEventListener('click', downloadCurrentVersion);
+            
+            // Release Note事件
+            elements.viewToolPurposeBtn.addEventListener('click', openToolPurposeModal);
+            elements.closePurposeModal.addEventListener('click', closeToolPurposeModal);
+            elements.closePurposeBtn.addEventListener('click', closeToolPurposeModal);
+            
+            elements.closeUploadToolModal.addEventListener('click', closeUploadToolModal);
+            elements.cancelUploadTool.addEventListener('click', closeUploadToolModal);
+            elements.uploadToolForm.addEventListener('submit', handleUploadTool);
+            
+            elements.closeUploadVersionModal.addEventListener('click', closeUploadVersionModal);
+            elements.cancelUploadVersion.addEventListener('click', closeUploadVersionModal);
+            elements.uploadVersionForm.addEventListener('submit', handleUploadVersion);
+            
+            elements.closeUpdateModal.addEventListener('click', closeUpdateContentModal);
+            elements.closeUpdateBtn.addEventListener('click', closeUpdateContentModal);
+
+            // 新增：验收弹框事件 
+            if (elements.closeAcceptModal) {
+                elements.closeAcceptModal.addEventListener('click', closeAcceptVersionModal);
+            }
+            if (elements.acceptModalNo) {
+                elements.acceptModalNo.addEventListener('click', closeAcceptVersionModal);
+            }
+            if (elements.acceptModalYes) {
+                elements.acceptModalYes.addEventListener('click', handleAcceptVersionConfirm);
+            }
+
+            elements.paginationBtnContainer.addEventListener('click', handlePaginationClick);
+        }
+
+        // 分页点击处理
+        function handlePaginationClick(e) {
+              const btn = e.target.closest('.pagination-btn');
+              if (!btn) return;
+
+              const activeData = getActiveData();
+              const totalPages = Math.ceil(activeData.length / CONFIG.PAGE_SIZE);
+
+              const btnType = btn.innerHTML.includes('angle-left') ? 'prev' :
+                              btn.innerHTML.includes('angle-right') ? 'next' : 'page';
+
+              switch (btnType) {
+                case 'prev':
+                  if (currentPage > 1) currentPage--;
+                  break;
+                case 'next':
+                  if (currentPage < totalPages) currentPage++;
+                  break;
+                case 'page':
+                  const pageNum = parseInt(btn.textContent);
+                  if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) currentPage = pageNum;
+                  break;
+              }
+
+              renderToolsTable();
+              updatePagination();
+        }
+
+        // 初始化文件上传器
+        function initFileUploader() {
+            if (fileUploaderInitialized) return;
+            fileUploaderInitialized = true;
+            
+            bindFileEventListeners();
+            
+            elements.dropArea.addEventListener('click', () => {
+                if (isFileProcessing) {
+                    showToast('info', '正在处理文件，请稍候...');
+                    return;
+                }
+                elements.toolFile.value = '';
+                elements.toolFile.click();
+            });
+            
+            elements.versionDropArea.addEventListener('click', () => {
+                if (isFileProcessing) {
+                    showToast('info', '正在处理文件，请稍候...');
+                    return;
+                }
+                elements.versionFile.value = '';
+                elements.versionFile.click();
+            });
+            
+            elements.removeFile.addEventListener('click', () => {
+                elements.toolFile.value = '';
+                elements.filePreview.classList.add('hidden');
+                isFileProcessing = false;
+            });
+            
+            elements.removeVersionFile.addEventListener('click', () => {
+                elements.versionFile.value = '';
+                elements.versionFilePreview.classList.add('hidden');
+                isFileProcessing = false;
+            });
+        }
+
+        // 绑定文件相关事件
+        function bindFileEventListeners() {
+            elements.toolFile.removeEventListener('change', handleToolFileChange);
+            elements.versionFile.removeEventListener('change', handleVersionFileChange);
+            
+            elements.toolFile.addEventListener('change', handleToolFileChange);
+            elements.versionFile.addEventListener('change', handleVersionFileChange);
+            
+            elements.dropArea.addEventListener('dragover', handleDragOver);
+            elements.dropArea.addEventListener('dragleave', handleDragLeave);
+            elements.dropArea.addEventListener('drop', handleDrop);
+            
+            elements.versionDropArea.addEventListener('dragover', handleDragOver);
+            elements.versionDropArea.addEventListener('dragleave', handleDragLeave);
+            elements.versionDropArea.addEventListener('drop', handleVersionDrop);
+        }
+
+        // 制品文件选择处理函数
+        function handleToolFileChange(e) {
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            setTimeout(() => {
+                try {
+                    const files = e.target.files;
+                    
+                    elements.filePreview.classList.add('hidden');
+                    
+                    if (!files || files.length === 0) {
+                        isFileProcessing = false;
+                        return;
+                    }
+                    
+                    if (files.length > 1) {
+                        showToast('error', '上传制品时必须仅上传一个文件');
+                        e.target.value = '';
+                        isFileProcessing = false;
+                        return;
+                    }
+
+                    const file = files[0];
+                    // 检查是否为ZIP或tar.gz文件
+                    const isZipFile = file.name.endsWith('.zip') && 
+                                      (file.type === 'application/zip' || 
+                                       file.type === 'application/x-zip-compressed' || 
+                                       file.type === 'application/octet-stream');
+                    
+                    const isTarGzFile = file.name.endsWith('.tar.gz') &&
+                                      (file.type === 'application/gzip' ||
+                                       file.type === 'application/x-gzip' ||
+                                       file.type === 'application/x-tar' ||
+                                       file.type === 'application/tar+gzip' ||
+                                       file.type === 'application/octet-stream');
+                    
+                    if (!isZipFile && !isTarGzFile) {
+                        showToast('error', '仅支持上传ZIP或tar.gz格式文件，请重新选择');
+                        e.target.value = '';
+                        isFileProcessing = false;
+                        return;
+                    }
+                    
+                    if (file.size > CONFIG.MAX_FILE_SIZE) {
+                        showToast('error', `文件大小不能超过${CONFIG.MAX_FILE_SIZE/(1024*1024*1024)}GB`);
+                        e.target.value = '';
+                        isFileProcessing = false;
+                        return;
+                    }
+                    
+                    handleToolFileSelect(file);
+                } catch (error) {
+                    console.error('文件选择处理错误:', error);
+                    showToast('error', '处理文件时发生错误，请重试');
+                    e.target.value = '';
+                } finally {
+                    isFileProcessing = false;
+                }
+            }, 50);
+        }
+
+        // 版本文件选择处理函数
+        function handleVersionFileChange(e) {
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            setTimeout(() => {
+                try {
+                    const files = e.target.files;
+                    
+                    elements.versionFilePreview.classList.add('hidden');
+                    
+                    if (!files || files.length === 0) {
+                        isFileProcessing = false;
+                        return;
+                    }
+
+                    const file = files[0];
+                    // 检查是否为ZIP或tar.gz文件
+                    const isZipFile = file.name.endsWith('.zip') && 
+                                      (file.type === 'application/zip' || 
+                                       file.type === 'application/x-zip-compressed' || 
+                                       file.type === 'application/octet-stream');
+                    
+                    const isTarGzFile = file.name.endsWith('.tar.gz') &&
+                                      (file.type === 'application/gzip' ||
+                                       file.type === 'application/x-gzip' ||
+                                       file.type === 'application/x-tar' ||
+                                       file.type === 'application/tar+gzip' ||
+                                       file.type === 'application/octet-stream');
+                    
+                    if (!isZipFile && !isTarGzFile) {
+                        showToast('error', '仅支持上传ZIP或tar.gz格式文件，请重新选择');
+                        e.target.value = '';
+                        isFileProcessing = false;
+                        return;
+                    }
+                    
+                    if (file.size > CONFIG.MAX_FILE_SIZE) {
+                        showToast('error', `文件大小不能超过${CONFIG.MAX_FILE_SIZE/(1024*1024*1024)}GB`);
+                        e.target.value = '';
+                        isFileProcessing = false;
+                        return;
+                    }
+                    
+                    handleVersionFileSelect(file);
+                } catch (error) {
+                    console.error('版本文件选择处理错误:', error);
+                    showToast('error', '处理文件时发生错误，请重试');
+                    e.target.value = '';
+                } finally {
+                    isFileProcessing = false;
+                }
+            }, 50);
+        }
+
+        // 文件预览处理
+        function handleToolFileSelect(file) {
+            if (!file) return;
+            
+            elements.previewFilename.textContent = file.name;
+            elements.filePreview.classList.remove('hidden');
+            
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            showToast('info', `已选择文件: ${file.name} (${fileSize}MB)`);
+        }
+
+        // 版本文件预览处理
+        function handleVersionFileSelect(file) {
+            if (!file) return;
+            
+            elements.versionPreviewFilename.textContent = file.name;
+            elements.versionFilePreview.classList.remove('hidden');
+            
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            showToast('info', `已选择文件: ${file.name} (${fileSize}MB)`);
+        }
+
+        // 拖放事件处理函数
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.add('border-primary');
+            this.classList.add('bg-dark-800');
+        }
+
+        function handleDragLeave() {
+            this.classList.remove('border-primary');
+            this.classList.remove('bg-dark-800');
+        }
+
+        // 制品拖放处理
+        function handleDrop(e) {
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                this.classList.remove('border-primary');
+                this.classList.remove('bg-dark-800');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('border-primary');
+            this.classList.remove('bg-dark-800');
+            
+            try {
+                const files = e.dataTransfer.files;
+                
+                if (files.length > 1) {
+                    showToast('error', '上传制品时必须仅上传一个文件');
+                    return;
+                }
+                
+                if (files.length) {
+                    const file = files[0];
+                    // 检查是否为ZIP或tar.gz文件
+                    const isZipFile = file.name.endsWith('.zip') && 
+                                      (file.type === 'application/zip' || 
+                                       file.type === 'application/x-zip-compressed' || 
+                                       file.type === 'application/octet-stream');
+                    
+                    const isTarGzFile = file.name.endsWith('.tar.gz') &&
+                                      (file.type === 'application/gzip' ||
+                                       file.type === 'application/x-gzip' ||
+                                       file.type === 'application/x-tar' ||
+                                       file.type === 'application/tar+gzip' ||
+                                       file.type === 'application/octet-stream');
+                    
+                    if (!isZipFile && !isTarGzFile) {
+                        showToast('error', '仅支持上传ZIP或tar.gz格式文件，请重新选择');
+                        return;
+                    }
+
+                    if (file.size > CONFIG.MAX_FILE_SIZE) {
+                        showToast('error', `文件大小不能超过${CONFIG.MAX_FILE_SIZE/(1024*1024*1024)}GB`);
+                        return;
+                    }
+                    
+                    elements.toolFile.files = files;
+                    handleToolFileSelect(files[0]);
+                }
+            } catch (error) {
+                console.error('拖放处理错误:', error);
+                showToast('error', '处理拖放文件时发生错误');
+            } finally {
+                isFileProcessing = false;
+            }
+        }
+
+        // 版本拖放处理
+        function handleVersionDrop(e) {
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                this.classList.remove('border-primary');
+                this.classList.remove('bg-dark-800');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('border-primary');
+            this.classList.remove('bg-dark-800');
+            
+            try {
+                const files = e.dataTransfer.files;
+                
+                if (files.length) {
+                    const file = files[0];
+                    // 检查是否为ZIP或tar.gz文件
+                    const isZipFile = file.name.endsWith('.zip') && 
+                                      (file.type === 'application/zip' || 
+                                       file.type === 'application/x-zip-compressed' || 
+                                       file.type === 'application/octet-stream');
+                    
+                    const isTarGzFile = file.name.endsWith('.tar.gz') &&
+                                      (file.type === 'application/gzip' ||
+                                       file.type === 'application/x-gzip' ||
+                                       file.type === 'application/x-tar' ||
+                                       file.type === 'application/tar+gzip' ||
+                                       file.type === 'application/octet-stream');
+                    
+                    if (!isZipFile && !isTarGzFile) {
+                        showToast('error', '仅支持上传ZIP或tar.gz格式文件，请重新选择');
+                        return;
+                    }
+
+                    if (file.size > CONFIG.MAX_FILE_SIZE) {
+                        showToast('error', `文件大小不能超过${CONFIG.MAX_FILE_SIZE/(1024*1024)}MB`);
+                        return;
+                    }
+                    
+                    elements.versionFile.files = files;
+                    handleVersionFileSelect(files[0]);
+                }
+            } catch (error) {
+                console.error('版本文件拖放处理错误:', error);
+                showToast('error', '处理拖放文件时发生错误');
+            } finally {
+                isFileProcessing = false;
+            }
+        }
+
+        // 带加载提示的请求制品函数
+        async function requestWithLoading(url, options, loadingMsg, successMsg, errorMsg, responseType = 'json') {
+            const loadingToast = showToast('loading', loadingMsg);
+            try {
+                const response = await fetch(url, options);
+                
+                if (!response.ok) {
+                    let errorDetails = '';
+                    try {
+                        const errData = await response.json();
+                        errorDetails = errData?.message || '';
+                    } catch {
+                        errorDetails = await response.text();
+                    }
+                    throw new Error(errorDetails || `HTTP状态码: ${response.status}`);
+                }
+                
+                let responseData;
+                switch(responseType) {
+                    case 'json':
+                        responseData = await response.json();
+                        break;
+                    case 'blob':
+                        responseData = await response.blob();
+                        break;
+                    case 'text':
+                        responseData = await response.text();
+                        break;
+                    default:
+                        responseData = response;
+                }
+                
+                if (loadingToast && !loadingToast.isRemoved) {
+                    loadingToast.remove();
+                }
+                if (successMsg) {
+                    showToast('success', successMsg);
+                }
+                
+                return responseData;
+            } catch (err) {
+                if (loadingToast && !loadingToast.isRemoved) {
+                    loadingToast.remove();
+                }
+                const finalErrMsg = `${errorMsg}: ${err.message || '未知错误'}`;
+                showToast('error', finalErrMsg);
+                throw err;
+            }
+        }
+
+        // 从API加载制品数据
+        function loadToolsData() {
+            elements.toolsTableBody.innerHTML = `
+                <tr class="border-t border-dark-700/30">
+                    <td colspan="6" class="px-6 py-12 text-center text-dark-500">
+                        <div class="inline-flex flex-col items-center">
+                            <i class="fa fa-spinner fa-spin mr-2 text-lg mb-2"></i>
+                            <span>加载制品数据中...</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            requestWithLoading(
+                `${CONFIG.API_BASE_URL}/tools/list`,
+                { method: 'GET' },
+                '正在加载制品数据...',
+                '制品数据加载成功',
+                '制品数据加载失败'
+            )
+            .then(data => {
+                toolsData = data;
+                currentPage = 1;
+                renderToolsTable();
+                updateBasicStatistics();
+                fetchTotalDownloads();
+                updatePagination();
+                elements.pagination.classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('加载制品数据失败:', error);
+                elements.toolsTableBody.innerHTML = `
+                    <tr class="border-t border-dark-700/30">
+                        <td colspan="6" class="px-6 py-12 text-center text-danger">
+                            <i class="fa fa-exclamation-circle mr-2"></i>加载失败，请刷新页面重试
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 从API获取总下载次数
+        function fetchTotalDownloads() {
+            requestWithLoading(
+                `${CONFIG.API_BASE_URL}/tools/download_count`,
+                { method: 'GET' },
+                '正在获取下载统计...',
+                '下载统计更新成功',
+                '获取下载次数失败'
+            )
+            .then(data => {
+                const totalDownloads = data.total_downloads || 0;
+                animateNumber(elements.totalDownloads, 
+                              parseInt(elements.totalDownloads.textContent) || 0, 
+                              totalDownloads);
+            })
+            .catch(error => {
+                console.error('获取总下载次数失败:', error);
+                elements.totalDownloads.textContent = '0';
+            });
+        }
+
+        // 渲染制品表格
+        function renderToolsTable(filteredData = null) {
+            const data = filteredData || filteredToolsData || toolsData;
+            const totalItems = data.length;
+            
+            const startIndex = (currentPage - 1) * CONFIG.PAGE_SIZE;
+            const endIndex = Math.min(startIndex + CONFIG.PAGE_SIZE, totalItems);
+            const paginatedData = data.slice(startIndex, endIndex);
+
+            if (totalItems === 0) {
+                elements.toolsTableBody.innerHTML = `
+                    <tr class="border-t border-dark-700/30">
+                        <td colspan="6" class="px-6 py-12 text-center text-dark-500">
+                            <div class="inline-flex flex-col items-center">
+                                <i class="fa fa-folder-open-o mr-2 text-lg mb-2"></i>
+                                <span>暂无制品数据</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                elements.toolsTableBody.innerHTML = paginatedData.map(tool => {
+                    // 获取制品状态
+                    const latestVersionObj = tool.versions.find(v => v.version === tool.latestVersion) || {};
+                    const toolStatus = getToolStatus(tool.latestVersion, latestVersionObj);
+                    let statusClass, statusIcon;
+                    if (toolStatus.type === 'success') {
+                        statusClass = 'text-success';
+                        statusIcon = 'fa-check-circle';
+                    } else if (toolStatus.type === 'danger') {
+                        statusClass = 'text-danger';
+                        statusIcon = 'fa-exclamation-circle';
+                    } else { // warning 类型（EVT）
+                        statusClass = 'text-warning';
+                        statusIcon = 'fa-check-circle';
+                    }
+                    const statusTextClass = 'text-light';
+                        
+                    return `
+                    <tr class="border-t border-dark-700/30 hover:bg-dark-800/50 cursor-pointer transition-colors" data-tool-name="${tool.name}">
+                        <td class="px-6 py-4 text-left">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                    <i class="fa fa-wrench"></i>
+                                </div>
+                                <span class="font-medium truncate max-w-[150px] sm:max-w-[200px] lg:max-w-[250px]" title="${tool.name}">${tool.name}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="badge bg-primary/10 text-primary">${tool.versionCount}</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">${tool.latestVersion}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="flex items-center justify-center">
+                                <i class="fa ${statusIcon} mr-2 ${statusClass}"></i>
+                                <span class="${statusTextClass}">${toolStatus.text}</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-dark-500">${tool.createTime}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <button class="view-version-btn w-8 h-8 rounded-full flex items-center justify-center text-primary hover:text-primary/80 hover:bg-primary/10 transition-colors" data-tool-name="${tool.name}">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                                <button class="download-latest-btn w-8 h-8 rounded-full flex items-center justify-center text-success hover:text-success/80 hover:bg-success/10 transition-colors" data-tool-name="${tool.name}">
+                                    <i class="fa fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+
+                document.querySelectorAll('[data-tool-name]').forEach(row => {
+                    row.addEventListener('click', (e) => {
+                        if (e.target.closest('button')) return;
+                        const toolName = row.getAttribute('data-tool-name');
+                        viewToolDetails(toolName);
+                    });
+                });
+
+                document.querySelectorAll('.view-version-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const toolName = btn.getAttribute('data-tool-name');
+                        viewToolDetails(toolName);
+                    });
+                });
+
+                document.querySelectorAll('.download-latest-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const toolName = btn.getAttribute('data-tool-name');
+                        const tool = toolsData.find(t => t.name === toolName);
+                        if (tool) {
+                            downloadVersion(tool, tool.latestVersion);
+                        }
+                    });
+                });
+            }
+
+            if (totalItems === 0) {
+                elements.showingRange.textContent = '0-0';
+                elements.totalCount.textContent = '0';
+            } else {
+                elements.showingRange.textContent = `${startIndex + 1}-${endIndex}`;
+                elements.totalCount.textContent = totalItems;
+            }
+        }
+
+        // 更新分页按钮和状态
+        function updatePagination() {
+              const activeData = getActiveData();
+              const totalItems = activeData.length;
+              const totalPages = Math.ceil(totalItems / CONFIG.PAGE_SIZE);
+
+              // 关键：结果集变小后，确保 currentPage 不越界
+              if (totalPages > 0 && currentPage > totalPages) currentPage = totalPages;
+              if (totalPages === 0) currentPage = 1;
+
+              elements.paginationBtnContainer.innerHTML = '';
+
+              const prevBtn = document.createElement('button');
+              prevBtn.className = `pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border ${
+                currentPage === 1
+                  ? 'border-dark-700 text-dark-500 opacity-50 cursor-not-allowed bg-dark-800/50'
+                  : 'border-dark-700 text-light hover:border-primary hover:text-primary bg-dark-800/50 transition-all'
+              }`;
+              prevBtn.innerHTML = '<i class="fa fa-angle-left"></i>';
+              elements.paginationBtnContainer.appendChild(prevBtn);
+
+              let startPage = Math.max(1, currentPage - 2);
+              let endPage = Math.min(totalPages, startPage + 4);
+
+              if (endPage - startPage < 4 && totalPages > 5) {
+                startPage = Math.max(1, endPage - 4);
+              }
+
+              for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border ${
+                  i === currentPage
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-dark-700 text-light bg-dark-800/50 hover:border-primary hover:text-primary transition-all'
+                }`;
+                pageBtn.textContent = i;
+                elements.paginationBtnContainer.appendChild(pageBtn);
+              }
+
+              const nextBtn = document.createElement('button');
+              nextBtn.className = `pagination-btn w-9 h-9 flex items-center justify-center rounded-xl border ${
+                currentPage === totalPages || totalPages === 0
+                  ? 'border-dark-700 text-dark-500 opacity-50 cursor-not-allowed bg-dark-800/50'
+                  : 'border-dark-700 text-light hover:border-primary hover:text-primary bg-dark-800/50 transition-all'
+              }`;
+              nextBtn.innerHTML = '<i class="fa fa-angle-right"></i>';
+              elements.paginationBtnContainer.appendChild(nextBtn);
+
+              if (totalPages <= 1) elements.pagination.classList.add('hidden');
+              else elements.pagination.classList.remove('hidden');
+        }
+
+        // 查看制品详情
+        function viewToolDetails(toolName) {
+            const tool = toolsData.find(t => t.name === toolName);
+            if (!tool) return;
+            
+            currentTool = tool;
+            currentVersion = tool.versions[0];
+            
+            elements.emptyState.classList.add('hidden');
+            elements.versionDetails.classList.remove('hidden');
+            
+            const title = `${tool.name} - 版本详情`;
+            elements.versionToolName.textContent = title;
+            elements.versionToolName.title = title;
+            
+            elements.detailVersion.textContent = currentVersion.version;
+            elements.detailCreateTime.textContent = currentVersion.createTime;
+            
+            updateDetailStatus(currentVersion.version, currentVersion);
+            
+            renderVersionsList(tool.versions);
+        }
+
+        // 渲染版本列表
+        function renderVersionsList(versions) {
+            elements.versionsList.innerHTML = versions.map(version => `
+                <li class="p-3 border rounded-xl cursor-pointer transition-colors ${version.version === currentVersion.version ? 'border-primary bg-primary/10' : 'border-dark-700/50 bg-dark-800/50 hover:border-primary/50 hover:bg-dark-800'}" data-version="${version.version}">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">${version.version}</p>
+                            <p class="text-xs text-dark-500">${version.createTime}</p>
+                        </div>
+                        ${version.version === currentVersion.version ? 
+                            '<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>' : ''}
+                    </div>
+                </li>
+            `).join('');
+            
+            document.querySelectorAll('[data-version]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const version = item.getAttribute('data-version');
+                    switchVersion(version);
+                });
+            });
+        }
+
+        // 切换版本
+        function switchVersion(versionNumber) {
+            const version = currentTool.versions.find(v => v.version === versionNumber);
+            if (!version) return;
+            
+            currentVersion = version;
+            
+            elements.detailVersion.textContent = version.version;
+            elements.detailCreateTime.textContent = version.createTime;
+            
+            updateDetailStatus(version.version, version);
+            
+            renderVersionsList(currentTool.versions);
+            
+            showToast('info', `已切换到版本 ${version.version}`);
+        }
+
+        // 关闭版本详情
+        function closeVersionDetails() {
+            elements.versionDetails.classList.add('hidden');
+            elements.emptyState.classList.remove('hidden');
+            currentTool = null;
+            currentVersion = null;
+        }
+
+        // 过滤制品
+        function filterTools() {
+            const searchTerm = elements.searchTool.value.trim().toLowerCase();
+            currentPage = 1;
+            
+            filteredToolsData = searchTerm
+                ? toolsData.filter(tool =>
+                    tool.name.toLowerCase().includes(searchTerm) ||
+                    tool.latestVersion.toLowerCase().includes(searchTerm)
+                )
+                : null;
+
+            renderToolsTable();     // 这里不用再传参，renderToolsTable 会自动用 filteredToolsData
+            updatePagination();
+        }
+
+        // 更新基本统计数据
+        function updateBasicStatistics() {
+            const totalTools = toolsData.length;
+            const totalVersions = toolsData.reduce((sum, tool) => sum + tool.versionCount, 0);
+            
+            elements.totalTools.textContent = totalTools;
+            elements.totalVersions.textContent = totalVersions;
+            
+            [
+                { element: elements.totalTools, value: totalTools },
+                { element: elements.totalVersions, value: totalVersions }
+            ].forEach(item => {
+                animateNumber(item.element, parseInt(item.element.textContent) || 0, item.value);
+            });
+        }
+
+        // 数字动画
+        function animateNumber(element, start, end, duration = 500) {
+            if (start === end) return;
+            
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    clearInterval(timer);
+                    current = end;
+                }
+                
+                element.textContent = Math.round(current);
+            }, 16);
+        }
+
+        // 打开上传制品模态框
+        function openUploadToolModal() {
+            elements.uploadToolModal.classList.remove('hidden');
+            elements.toolName.focus();
+            
+            elements.uploadToolForm.reset();
+            elements.filePreview.classList.add('hidden');
+            elements.releaseNoteCounter.textContent = `0/${CONFIG.MAX_RELEASE_NOTE_BYTES} 字节`;
+            elements.releaseNoteCounter.classList.remove('text-danger');
+            isFileProcessing = false;
+        }
+
+        // 关闭上传制品模态框
+        function closeUploadToolModal() {
+            elements.uploadToolModal.classList.add('hidden');
+            isFileProcessing = false;
+        }
+
+        // 打开上传版本模态框
+        function openUploadVersionModal() {
+            if (!currentTool) return;
+            
+            elements.uploadVersionModal.classList.remove('hidden');
+            const title = `为 ${currentTool.name} 上传新版本`;
+            elements.uploadVersionTitle.textContent = title;
+            elements.uploadVersionTitle.title = title;
+            elements.currentToolName.value = currentTool.name;
+            elements.newVersion.value = getNextVersion(currentTool.latestVersion);
+            elements.newVersion.focus();
+            
+            elements.uploadVersionForm.reset();
+            elements.currentToolName.value = currentTool.name;
+            elements.newVersion.value = getNextVersion(currentTool.latestVersion);
+            elements.versionFilePreview.classList.add('hidden');
+            elements.newReleaseNoteCounter.textContent = `0/${CONFIG.MAX_RELEASE_NOTE_BYTES} 字节`;
+            elements.newReleaseNoteCounter.classList.remove('text-danger');
+            isFileProcessing = false;
+        }
+
+        // 关闭上传版本模态框
+        function closeUploadVersionModal() {
+            elements.uploadVersionModal.classList.add('hidden');
+            isFileProcessing = false;
+        }
+
+        // 计算下一个版本号
+        function getNextVersion(currentVersion) {
+            if (!currentVersion) return '1.0.0';
+            
+            currentVersion = currentVersion.startsWith('v') ? currentVersion.substring(1) : currentVersion;
+            const parts = currentVersion.split('.').map(Number);
+            parts[parts.length - 1] += 1;
+            
+            return parts.join('.');
+        }
+
+        // 下载指定版本制品
+        function downloadVersion(tool, version) {
+            if (!tool || !version) return;
+            
+            const requestData = {
+                tool_name: tool.name,
+                version: version
+            };
+            
+            requestWithLoading(
+                `${CONFIG.API_BASE_URL}/download/tool`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                },
+                `正在准备下载 ${tool.name} ${version}...`,
+                `成功开始下载 ${tool.name} ${version}`,
+                '下载失败',
+                'blob'
+            )
+            .then(blob => {
+                // 根据MIME类型确定正确的扩展名
+                let extension = '.zip'; // 默认
+                
+                // 根据文件的MIME类型设置正确的扩展名
+                if (blob.type === 'application/gzip' || blob.type === 'application/x-gzip' || blob.type === 'application/x-tar') {
+                    extension = '.tar.gz';
+                }
+                
+                // 也可以从服务器返回的响应头中获取原始文件名（如果API支持）
+                // 这里保持原逻辑，仅根据MIME类型修正扩展名
+                
+                let filename = `${tool.name}-${version}${extension}`;
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+                
+                fetchTotalDownloads();
+            })
+            .catch(error => {
+                console.error('下载处理失败:', error);
+            });
+        }
+
+        // 下载当前版本
+        function downloadCurrentVersion() {
+            if (currentTool && currentVersion) {
+                downloadVersion(currentTool, currentVersion.version);
+            }
+        }
+
+        // 处理上传制品表单提交
+        function handleUploadTool(e) {
+            e.preventDefault();
+            
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            const toolName = elements.toolName.value.trim();
+            const toolVersion = elements.toolVersion.value.trim();
+            const releaseNote = elements.releaseNote.value.trim();
+            const toolFiles = elements.toolFile.files;
+            
+            // 验证更新说明字节数
+            const releaseNoteBytes = getTextByteLength(releaseNote);
+            if (releaseNoteBytes > CONFIG.MAX_RELEASE_NOTE_BYTES) {
+                showToast('error', `更新说明不能超过${CONFIG.MAX_RELEASE_NOTE_BYTES}字节`);
+                elements.releaseNote.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (!toolName) {
+                showToast('error', '请输入制品名称');
+                elements.toolName.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (!toolVersion) {
+                showToast('error', '请输入版本号');
+                elements.toolVersion.focus();
+                isFileProcessing = false;
+                return;
+            }
+
+            if (!releaseNote) {
+                showToast('error', '请输入更新说明');
+                elements.releaseNote.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (toolFiles.length === 0) {
+                showToast('error', '请选择要上传的文件');
+                isFileProcessing = false;
+                return;
+            }
+            if (toolFiles.length > 1) {
+                showToast('error', '上传制品时必须仅上传一个文件');
+                isFileProcessing = false;
+                return;
+            }
+            
+            const toolExists = toolsData.some(t => t.name === toolName);
+            if (toolExists) {
+                showToast('error', `制品 "${toolName}" 已存在，请选择其他名称`);
+                elements.toolName.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('tool_name', toolName);
+            formData.append('version', toolVersion);
+            formData.append('release_note', releaseNote);
+            formData.append('file', toolFiles[0]);
+            const versionParts = toolVersion.split('.');
+            if (versionParts.length === 3) {
+                formData.append('status', 'EVT');
+            } else {
+                formData.append('status', 'Beta');
+            }
+            
+            requestWithLoading(
+                `${CONFIG.API_BASE_URL}/upload/tool`,
+                { method: 'POST', body: formData },
+                `正在上传制品 ${toolName} ${toolVersion}...`,
+                `成功上传制品 ${toolName} ${toolVersion}`,
+                '上传制品失败'
+            )
+            .then(data => {
+                if (data.status === 'success') {
+                    const newTool = {
+                        name: toolName,          
+                        versionCount: 1,         
+                        latestVersion: toolVersion,  
+                        createTime: data.create_time,  
+                        versions: [
+                            {
+                                version: toolVersion,
+                                createTime: data.create_time
+                            }
+                        ]
+                    };
+                    
+                    toolsData.unshift(newTool);
+                    currentPage = 1;
+                    
+                    renderToolsTable();
+                    updateBasicStatistics();
+                    updatePagination();
+                    closeUploadToolModal();
+                    
+                    viewToolDetails(toolName);
+                }
+            })
+            .catch(error => {
+                console.error('上传制品后续处理失败:', error);
+            })
+            .finally(() => {
+                isFileProcessing = false;
+            });
+        }
+
+        // 处理上传版本表单提交
+        function handleUploadVersion(e) {
+            e.preventDefault();
+            
+            if (isFileProcessing) {
+                showToast('info', '正在处理文件，请稍候...');
+                return;
+            }
+            
+            isFileProcessing = true;
+            
+            const toolName = elements.currentToolName.value.trim();
+            const newVersion = elements.newVersion.value.trim();
+            const newReleaseNote = elements.newReleaseNote.value.trim();
+            const versionFile = elements.versionFile.files[0];
+            
+            // 验证更新说明字节数
+            const releaseNoteBytes = getTextByteLength(newReleaseNote);
+            if (releaseNoteBytes > CONFIG.MAX_RELEASE_NOTE_BYTES) {
+                showToast('error', `更新说明不能超过${CONFIG.MAX_RELEASE_NOTE_BYTES}字节`);
+                elements.newReleaseNote.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (!toolName || !currentTool) {
+                showToast('error', '制品信息无效');
+                closeUploadVersionModal();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (!newVersion) {
+                showToast('error', '请输入版本号');
+                elements.newVersion.focus();
+                isFileProcessing = false;
+                return;
+            }
+
+            if (!newReleaseNote) {
+                showToast('error', '请输入更新说明');
+                elements.newReleaseNote.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            const versionExists = currentTool.versions.some(v => v.version === newVersion);
+            if (versionExists) {
+                showToast('error', `版本 ${newVersion} 已存在，请选择其他版本号`);
+                elements.newVersion.focus();
+                isFileProcessing = false;
+                return;
+            }
+            
+            if (!versionFile) {
+                showToast('error', '请选择要上传的文件');
+                isFileProcessing = false;
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('tool_name', toolName);
+            formData.append('version', newVersion);
+            formData.append('release_note', newReleaseNote);
+            formData.append('file', versionFile);
+            const versionParts = newVersion.split('.');
+            if (versionParts.length === 3) {
+                formData.append('status', 'EVT');
+            } else {
+                formData.append('status', 'Beta');
+            }
+            
+            requestWithLoading(
+                `${CONFIG.API_BASE_URL}/upload/tool`,
+                { method: 'POST', body: formData },
+                `正在上传 ${currentTool.name} ${newVersion}...`,
+                `成功上传 ${currentTool.name} ${newVersion}`,
+                '上传版本失败'
+            )
+            .then(data => {
+                if (data.status === 'success') {
+                    const newVersionData = {
+                        version: newVersion,
+                        createTime: data.create_time
+                    };
+                    
+                    currentTool.versions.unshift(newVersionData);
+                    currentTool.versionCount = currentTool.versions.length;
+                    currentTool.latestVersion = newVersion;
+                    
+                    renderToolsTable();
+                    updateBasicStatistics();
+                    closeUploadVersionModal();
+                    
+                    switchVersion(newVersion);
+                }
+            })
+            .catch(error => {
+                console.error('上传版本后续处理失败:', error);
+            })
+            .finally(() => {
+                isFileProcessing = false;
+            });
+        }
+
+        // 显示提示框
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.isRemoved = false;
+            
+            let bgColor, textColor, icon;
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-success';
+                    textColor = 'text-white';
+                    icon = 'fa-check-circle';
+                    break;
+                case 'error':
+                    bgColor = 'bg-danger';
+                    textColor = 'text-white';
+                    icon = 'fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    bgColor = 'bg-warning';
+                    textColor = 'text-white';
+                    icon = 'fa-exclamation-triangle';
+                    break;
+                case 'info':
+                    bgColor = 'bg-primary';
+                    textColor = 'text-white';
+                    icon = 'fa-info-circle';
+                    break;
+                case 'loading':
+                    bgColor = 'bg-dark-700';
+                    textColor = 'text-white';
+                    icon = 'fa-spinner fa-spin';
+                    break;
+                default:
+                    bgColor = 'bg-dark-600';
+                    textColor = 'text-white';
+                    icon = 'fa-info-circle';
+            }
+            
+            toast.className = `${bgColor} ${textColor} px-4 py-3 rounded-xl shadow-lg flex items-center space-x-3 fade-in max-w-md`;
+            toast.innerHTML = `
+                <i class="fa ${icon}"></i>
+                <span class="text-sm">${message}</span>
+                <button class="ml-auto text-white hover:text-gray-200 w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <i class="fa fa-times text-xs"></i>
+                </button>
+            `;
+            
+            elements.toastContainer.appendChild(toast);
+            
+            const closeBtn = toast.querySelector('button');
+            closeBtn.addEventListener('click', () => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                setTimeout(() => {
+                    toast.remove();
+                    toast.isRemoved = true;
+                }, 300);
+            });
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(20px)';
+                    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    setTimeout(() => {
+                        toast.remove();
+                        toast.isRemoved = true;
+                    }, 300);
+                }, 3000);
+            }
+            
+            return toast;
+        }
+    </script>
+
+</body></html>

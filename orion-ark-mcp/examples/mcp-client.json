@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "orion-ark": {
+      "command": "/absolute/path/to/venv/bin/orion-ark-mcp",
+      "args": [
+        "--db",
+        "/absolute/path/to/crawl4ai-dev/orion-ark-mcp/data/orion_ark.db",
+        "serve",
+        "--transport",
+        "stdio"
+      ]
+    }
+  }
+}
