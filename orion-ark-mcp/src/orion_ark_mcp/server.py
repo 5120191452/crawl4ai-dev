@@ -16,7 +16,17 @@ from .service import ArkKnowledgeService
 from .store import ArkStore
 
 
-mcp = MCPServer("Orion Ark API Guide")
+SERVER_INSTRUCTIONS = (
+    "当用户的问题实质涉及 Orion Ark（也称 Orion、Ark、Ark SDK/API）的接口、"
+    "用法、参数或版本核对、接口选型、示例或相关开发时，优先调用本 MCP 中最相关的工具，"
+    "再依据检索结果回答。按意图选择：查接口用 search_ark_interfaces，"
+    "按任务选型用 recommend_ark_interfaces，查详情用 get_ark_interface，"
+    "查示例用 get_ark_examples；查询组件或索引状态时分别用 list_ark_components、"
+    "ark_status。只在无关语境里顺带出现这些词时不要调用。本服务只检索当前文档索引，"
+    "不会执行 Ark API 或操作设备。"
+)
+
+mcp = MCPServer("Orion Ark API Guide", instructions=SERVER_INSTRUCTIONS)
 READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 _database_override: Path | None = None
 _resources_registered_for: Path | None = None
